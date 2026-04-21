@@ -1,0 +1,1209 @@
+// src/App.js (Componente Principal de la Aplicación)
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Header from './components/Layout/Header';
+import Sidebar from './components/Layout/Sidebar';
+import Dashboard from './pages/Dashboard';
+import ModuleDetail from './pages/ModuleDetail';
+import CoilCollaboration from './pages/CoilCollaboration';
+import Assessments from './pages/Assessments';
+import Gamification from './pages/Gamification';
+import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';
+import './styles/App.css'; // Estilos globales
+
+function App() {
+  return (
+    <Router>
+      <div className="app-container">
+        <Header />
+        <Sidebar />
+        <main className="content-area">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/modules/:moduleId" element={<ModuleDetail />} />
+            <Route path="/coil" element={<CoilCollaboration />} />
+            <Route path="/assessments" element={<Assessments />} />
+            <Route path="/gamification" element={<Gamification />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+Componente Header.js
+// src/components/Layout/Header.js
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FaBell, FaUserCircle, FaBars, FaSearch } from 'react-icons/fa';
+import '../../styles/Header.css';
+
+const Header = ({ toggleSidebar }) => {
+  return (
+    <header className="app-header" aria-label="Encabezado de la aplicación">
+      <div className="header-left">
+        <button className="sidebar-toggle" onClick={toggleSidebar} aria-label="Abrir/cerrar menú lateral">
+          <FaBars />
+        </button>
+        <Link to="/" className="app-logo" aria-label="Ir a la página de inicio">
+          <h1>MED-COIL</h1>
+        </Link>
+      </div>
+      <div className="header-center">
+        <div className="search-bar" role="search">
+          <input type="search" placeholder="Buscar módulos, casos, estudiantes..." aria-label="Campo de búsqueda global" />
+          <button aria-label="Realizar búsqueda"><FaSearch /></button>
+        </div>
+      </div>
+      <nav className="header-right" aria-label="Navegación de usuario">
+        <Link to="/notifications" className="icon-link" aria-label="Ver notificaciones">
+          <FaBell />
+          <span className="notification-badge">3</span> {/* Ejemplo de badge */}
+        </Link>
+        <Link to="/profile" className="icon-link user-menu-trigger" aria-label="Abrir menú de usuario">
+          <FaUserCircle />
+        </Link>
+      </nav>
+    </header>
+  );
+};
+
+export default Header;
+Componente Sidebar.js
+// src/components/Layout/Sidebar.js
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { FaHome, FaBookMedical, FaUsers, FaGraduationCap, FaGamepad, FaChartBar, FaQuestionCircle } from 'react-icons/fa';
+import '../../styles/Sidebar.css';
+
+const Sidebar = () => {
+  return (
+    <aside className="app-sidebar" aria-label="Navegación principal">
+      <nav>
+        <ul>
+          <li>
+            <NavLink to="/" className={({ isActive }) => (isActive ? 'active-link' : '')} aria-label="Ir al Panel de control">
+              <FaHome /> <span>Dashboard</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/modules" className={({ isActive }) => (isActive ? 'active-link' : '')} aria-label="Explorar módulos académicos">
+              <FaBookMedical /> <span>Módulos Académicos</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/coil" className={({ isActive }) => (isActive ? 'active-link' : '')} aria-label="Colaboración Internacional COIL">
+              <FaUsers /> <span>Colaboración COIL</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/assessments" className={({ isActive }) => (isActive ? 'active-link' : '')} aria-label="Ver evaluaciones y pruebas">
+              <FaGraduationCap /> <span>Evaluaciones</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/gamification" className={({ isActive }) => (isActive ? 'active-link' : '')} aria-label="Explorar actividades de gamificación">
+              <FaGamepad /> <span>Gamificación</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/analytics" className={({ isActive }) => (isActive ? 'active-link' : '')} aria-label="Ver análisis de aprendizaje">
+              <FaChartBar /> <span>Analíticas</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/help" className={({ isActive }) => (isActive ? 'active-link' : '')} aria-label="Obtener ayuda y soporte">
+              <FaQuestionCircle /> <span>Ayuda</span>
+            </NavLink>
+          </li>
+        </ul>
+      </nav>
+      <div className="sidebar-footer">
+        {/* Aquí podría ir información de copyright o enlaces rápidos */}
+        <p>&copy; 2026 MED-COIL</p>
+      </div>
+    </aside>
+  );
+};
+
+export default Sidebar;
+Componente Dashboard.js (Página de inicio del estudiante)
+// src/pages/Dashboard.js
+import React from 'react';
+import { FaGraduationCap, FaUsers, FaChartLine, FaTrophy } from 'react-icons/fa';
+import '../../styles/Dashboard.css';
+
+const Dashboard = () => {
+  const user = { name: "Dr. Ana García", university: "PUCE-SD" }; // Datos de ejemplo
+  const progressData = {
+    currentModule: "Sistema Cardiovascular",
+    overallProgress: 75,
+    upcomingDeadlines: [
+      { id: 1, title: "Examen de Anatomía Cardíaca", date: "2026-05-01" },
+      { id: 2, title: "Caso Clínico COIL: Miocardiopatías", date: "2026-04-28" }
+    ],
+    notifications: [
+      { id: 1, text: "Nueva actividad en 'Colaboración COIL: Caso Renal'", type: "info" },
+      { id: 2, text: "Tu equipo ha subido un nuevo avance en el ABP.", type: "success" }
+    ],
+    gamificationRank: "Bronce I",
+    leaderboardPosition: 15,
+  };
+
+  return (
+    <section className="dashboard-page" aria-label="Panel de control del estudiante">
+      <h2 className="page-title">Bienvenido de nuevo, {user.name}</h2>
+      <p className="university-info">Universidad: {user.university}</p>
+
+      <div className="dashboard-grid">
+        {/* Widget de Progreso General */}
+        <div className="dashboard-widget progress-widget" aria-labelledby="progress-heading">
+          <h3 id="progress-heading">Tu Progreso Académico</h3>
+          <p>Módulo Actual: **{progressData.currentModule}**</p>
+          <div className="progress-bar-container" role="progressbar" aria-valuenow={progressData.overallProgress} aria-valuemin="0" aria-valuemax="100">
+            <div className="progress-bar" style={{ width: `${progressData.overallProgress}%` }}>
+              {progressData.overallProgress}%
+            </div>
+          </div>
+          <button className="btn-primary">Continuar Aprendiendo</button>
+        </div>
+
+        {/* Widget de Próximas Fechas */}
+        <div className="dashboard-widget deadlines-widget" aria-labelledby="deadlines-heading">
+          <h3 id="deadlines-heading">Próximas Fechas Límite</h3>
+          <ul>
+            {progressData.upcomingDeadlines.map(item => (
+              <li key={item.id}>
+                <span>{item.title}</span> <span className="deadline-date">{item.date}</span>
+              </li>
+            ))}
+          </ul>
+          <button className="btn-secondary">Ver todas las evaluaciones</button>
+        </div>
+
+        {/* Widget de Colaboración COIL */}
+        <div className="dashboard-widget coil-widget" aria-labelledby="coil-heading">
+          <h3 id="coil-heading"><FaUsers /> Colaboración COIL</h3>
+          <p>Actividades recientes y mensajes de tus compañeros de LUZ.</p>
+          <p>Próximo encuentro virtual: **Jueves, 25 de abril, 10:00 AM (UTC-5)**</p>
+          <button className="btn-primary">Ir a COIL</button>
+        </div>
+
+        {/* Widget de Notificaciones */}
+        <div className="dashboard-widget notifications-widget" aria-labelledby="notifications-heading">
+          <h3 id="notifications-heading"><FaBell /> Notificaciones</h3>
+          <ul>
+            {progressData.notifications.map(item => (
+              <li key={item.id} className={`notification-item ${item.type}`}>
+                {item.text}
+              </li>
+            ))}
+          </ul>
+          <button className="btn-secondary">Ver todas</button>
+        </div>
+
+        {/* Widget de Gamificación */}
+        <div className="dashboard-widget gamification-widget" aria-labelledby="gamification-heading">
+          <h3 id="gamification-heading"><FaTrophy /> Tu Progreso Gamificado</h3>
+          <p>Rango Actual: **{progressData.gamificationRank}**</p>
+          <p>Posición en el Ranking Global: **#{progressData.leaderboardPosition}**</p>
+          <button className="btn-primary">Explorar Gamificación</button>
+        </div>
+      </div>
+
+      {/* Sección del Tutor IA */}
+      <div className="ai-tutor-section" aria-labelledby="ai-tutor-heading">
+        <h3 id="ai-tutor-heading">Pregúntale a Genflow, tu Tutor IA</h3>
+        <div className="ai-chat-interface">
+          <div className="chat-log">
+            {/* Mensajes de ejemplo */}
+            <p className="ai-message">Hola {user.name}, ¿en qué puedo ayudarte hoy?</p>
+            <p className="user-message">¿Cuál es la inervación del diafragma?</p>
+            <p className="ai-message">El diafragma está inervado principalmente por el nervio frénico (C3-C5)...</p>
+          </div>
+          <input type="text" placeholder="Escribe tu pregunta aquí..." aria-label="Campo de entrada para el tutor IA" />
+          <button className="btn-secondary">Enviar</button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Dashboard;
+2. CSS BÁSICO (Mobile-First y Accesibilidad)
+Este CSS establecerá las bases del diseño responsivo y la coherencia visual.
+
+/* src/styles/App.css */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;600;700&display=swap');
+
+:root {
+  --primary-color: #007bff; /* Azul vibrante */
+  --secondary-color: #6c757d; /* Gris para acentos */
+  --accent-color: #28a745; /* Verde para éxito/logros */
+  --danger-color: #dc3545; /* Rojo para errores/advertencias */
+  --bg-light: #f8f9fa; /* Fondo claro */
+  --bg-dark: #343a40; /* Fondo oscuro (para texto en claro) */
+  --text-dark: #212529; /* Color de texto principal */
+  --text-light: #f8f9fa; /* Color de texto sobre fondo oscuro */
+  --border-color: #dee2e6; /* Borde suave */
+  --header-height: 60px;
+  --sidebar-width: 250px;
+  --font-family-body: 'Lato', sans-serif;
+  --font-family-heading: 'Montserrat', sans-serif;
+  --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-medium: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-body);
+  color: var(--text-dark);
+  background-color: var(--bg-light);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  color: var(--text-dark);
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-family: var(--font-family-body);
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+.btn-primary:hover {
+  background-color: #0056b3; /* Un tono más oscuro */
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: var(--text-light);
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Global Layout */
+.app-container {
+  display: flex;
+  flex-direction: column; /* Mobile-first: columna por defecto */
+  min-height: 100vh;
+}
+
+.content-area {
+  flex-grow: 1;
+  padding: 1rem;
+  padding-top: var(--header-height); /* Espacio para el header fijo */
+  margin-left: 0; /* Por defecto, sidebar oculto en móvil */
+  transition: margin-left 0.3s ease;
+}
+
+/* Specific component styles - Mobile-first */
+
+/* Header.css */
+.app-header {
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow-medium);
+  height: var(--header-height);
+}
+
+.app-header .app-logo h1 {
+  color: var(--text-light);
+  font-size: 1.4rem;
+  margin-bottom: 0;
+}
+
+.app-header .header-left, .app-header .header-right {
+  display: flex;
+  align-items: center;
+}
+
+.app-header .sidebar-toggle {
+  background: none;
+  color: var(--text-light);
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  display: block; /* Visible en móvil */
+}
+
+.app-header .search-bar {
+  display: none; /* Oculto en móvil, se podría activar con un icono */
+}
+
+.app-header .icon-link {
+  color: var(--text-light);
+  font-size: 1.2rem;
+  margin-left: 1.2rem;
+  position: relative;
+}
+
+.app-header .notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: var(--danger-color);
+  color: var(--text-light);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+/* Sidebar.css */
+.app-sidebar {
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  width: var(--sidebar-width);
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  left: -var(--sidebar-width); /* Inicialmente oculto */
+  padding-top: var(--header-height);
+  box-shadow: var(--shadow-medium);
+  transition: left 0.3s ease;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-sidebar.open { /* Clase para mostrar el sidebar en móvil */
+  left: 0;
+}
+
+.app-sidebar nav ul {
+  list-style: none;
+}
+
+.app-sidebar nav li {
+  margin-bottom: 0.5rem;
+}
+
+.app-sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: var(--text-light);
+  font-weight: 400;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  border-left: 4px solid transparent;
+}
+
+.app-sidebar nav a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+}
+
+.app-sidebar nav a.active-link {
+  background-color: var(--primary-color);
+  border-left-color: var(--accent-color);
+  font-weight: 600;
+}
+
+.app-sidebar nav a svg {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.sidebar-footer {
+  margin-top: auto; /* Empuja el footer hacia abajo */
+  padding: 1rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+
+/* Dashboard.css */
+.dashboard-page {
+  padding: 1.5rem 1rem;
+}
+
+.dashboard-page .page-title {
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-page .university-info {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Una columna por defecto en móvil */
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-widget {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+}
+
+.dashboard-widget h3 {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-widget h3 svg {
+  margin-right: 0.5rem;
+}
+
+.progress-bar-container {
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  height: 25px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: var(--accent-color);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: width 0.5s ease-in-out;
+}
+
+.deadlines-widget ul, .notifications-widget ul {
+  list-style: none;
+  margin-bottom: 1rem;
+}
+
+.deadlines-widget li, .notifications-widget li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.deadlines-widget li:last-child, .notifications-widget li:last-child {
+  border-bottom: none;
+}
+
+.notification-item.info {
+  color: var(--primary-color);
+}
+.notification-item.success {
+  color: var(--accent-color);
+}
+.notification-item.warning {
+  color: orange;
+}
+.notification-item.danger {
+  color: var(--danger-color);
+}
+
+.ai-tutor-section {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+  margin-top: 2rem;
+}
+
+.ai-tutor-section h3 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.ai-chat-interface {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ai-chat-interface .chat-log {
+  height: 200px;
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: var(--bg-light);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ai-chat-interface .chat-log p {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.ai-chat-interface .ai-message {
+  background-color: #e9ecef;
+  align-self: flex-start;
+  max-width: 80%;
+}
+
+.ai-chat-interface .user-message {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  align-self: flex-end;
+  max-width: 80%;
+}
+
+.ai-chat-interface input {
+  border: none;
+  padding: 10px 1rem;
+  font-size: 1rem;
+  flex-grow: 1;
+}
+
+.ai-chat-interface button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Media Queries para Desktop */
+@media (min-width: 768px) {
+  .app-container {
+    flex-direction: row; /* Desktop: sidebar y contenido lado a lado */
+  }
+
+  .app-header {
+    left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+  }
+
+  .app-header .sidebar-toggle {
+    display: none; /* Ocultar en desktop */
+  }
+
+  .app-header .search-bar {
+    display: flex; /* Mostrar en desktop */
+    width: 60%;
+    max-width: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .app-header .search-bar input {
+    flex-grow: 1;
+    border: none;
+    padding: 8px 12px;
+    background-color: transparent;
+    color: var(--text-light);
+    font-size: 0.95rem;
+  }
+
+  .app-header .search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .app-header .search-bar button {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+    padding: 8px 12px;
+  }
+
+  .app-sidebar {
+    left: 0; /* Visible por defecto en desktop */
+  }
+
+  .content-area {
+    margin-left: var(--sidebar-width); /* Mover contenido para dejar espacio al sidebar */
+    padding: 1.5rem;
+    padding-top: calc(var(--header-height) + 1.5rem); /* Ajuste de padding-top */
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas adaptables */
+  }
+  
+  .dashboard-widget.progress-widget {
+    grid-column: span 2; /* Widget de progreso ocupa más espacio */
+  }
+  
+  .ai-tutor-section .ai-chat-interface {
+    flex-direction: row;
+  }
+
+  .ai-chat-interface input {
+    border-right: 1px solid var(--border-color);
+  }
+  
+  .ai-chat-interface button {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+}
+3. FRAGMENTOS DE JAVASCRIPT/REACT PARA INTERACCIONES CLAVE
+Además de la estructura de componentes, necesitamos lógica para la funcionalidad del sidebar, la interacción con el tutor IA, etc.
+
+App.js con lógica de toggleSidebar
+// src/App.js (Modificado para toggleSidebar)
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Header from './components/Layout/Header';
+import Sidebar from './components/Layout/Sidebar';
+import Dashboard from './pages/Dashboard';
+// ...otras importaciones de páginas
+
+import './styles/App.css'; // Estilos globales
+
+function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  return (
+    <Router>
+      <div className={`app-container ${isSidebarOpen ? 'sidebar-open' : ''}`}> {/* Añadir clase para CSS */}
+        <Header toggleSidebar={toggleSidebar} />
+        <Sidebar isOpen={isSidebarOpen} /> {/* Pasar estado al sidebar */}
+        <main className="content-area">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            {/* ...otras rutas */}
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+Modificación en Sidebar.js para ocultar/mostrar
+// src/components/Layout/Sidebar.js (Modificado)
+// ...importaciones
+const Sidebar = ({ isOpen }) => { // Recibe la prop isOpen
+  return (
+    <aside className={`app-sidebar ${isOpen ? 'open' : ''}`} aria-label="Navegación principal">
+      {/* ...rest of the sidebar content */}
+    </aside>
+  );
+};
+export default Sidebar;
+Lógica para el Tutor IA (conceptual en Dashboard.js)
+// src/pages/Dashboard.js (fragmento de la sección del tutor IA)
+import React, { useState } from 'react';
+// ...otras importaciones
+
+const Dashboard = () => {
+  // ...datos de user y progressData
+
+  const [aiChatLog, setAiChatLog] = useState([
+    { type: 'ai', text: 'Hola Dr. Ana García, ¿en qué puedo ayudarte hoy?' },
+    { type: 'user', text: '¿Cuál es la inervación del diafragma?' },
+    { type: 'ai', text: 'El diafragma está inervado principalmente por el nervio frénico (C3-C5), que es crucial para la respiración. También recibe inervación sensitiva de los nervios intercostales (T5-T11) y los nervios subcostales (T12) en sus porciones periféricas.' },
+  ]);
+  const [currentQuestion, setCurrentQuestion] = useState('');
+
+  const handleAskAI = async () => {
+    if (currentQuestion.trim() === '') return;
+
+    const newUserMessage = { type: 'user', text: currentQuestion };
+    setAiChatLog(prevLog => [...prevLog, newUserMessage]);
+    setCurrentQuestion('');
+
+    // SIMULACIÓN de llamada a API de IA (en un entorno real, esto sería una llamada HTTP)
+    const aiResponse = await simulateAiResponse(currentQuestion);
+    setAiChatLog(prevLog => [...prevLog, { type: 'ai', text: aiResponse }]);
+  };
+
+  const simulateAiResponse = async (question) => {
+    // Aquí se conectaría con el microservicio de IA.
+    // Por ahora, una respuesta simulada simple.
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simula un retraso de red
+    if (question.toLowerCase().includes('corazón')) {
+      return "El corazón es un órgano muscular que bombea sangre a todo el cuerpo. Tiene cuatro cámaras: dos aurículas y dos ventrículos. Su funcionamiento está regido por el sistema de conducción cardíaco...";
+    } else if (question.toLowerCase().includes('huesos')) {
+      return "El esqueleto humano adulto consta de 206 huesos, que se dividen en axial y apendicular. Los huesos son vitales para el soporte, protección y movimiento.";
+    } else {
+      return "Esa es una excelente pregunta. Estoy procesando la información... ¿Hay algo más específico que te gustaría saber sobre ello?";
+    }
+  };
+
+  return (
+    <section className="dashboard-page" aria-label="Panel de control del estudiante">
+      {/* ...otros widgets del dashboard */}
+
+      <div className="ai-tutor-section" aria-labelledby="ai-tutor-heading">
+        <h3 id="ai-tutor-heading">Pregúntale a Genflow, tu Tutor IA</h3>
+        <div className="ai-chat-interface">
+          <div className="chat-log" role="log" aria-live="polite">
+            {aiChatLog.map((msg, index) => (
+              <p key={index} className={`${msg.type}-message`}>
+                {msg.text}
+              </p>
+            ))}
+          </div>
+          <div className="chat-input-area">
+            <input
+              type="text"
+              placeholder="Escribe tu pregunta aquí..."
+              aria-label="Campo de entrada para el tutor IA"
+              value={currentQuestion}
+              onChange={(e) => setCurrentQuestion(e.target.value)}
+              onKeyPress={(e) => { if (e.key === 'Enter') handleAskAI(); }}
+            />
+            <button className="btn-secondary" onClick={handleAskAI}>Enviar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Dashboard;
+4. ESQUEMAS CONCEPTUALES PARA BACKEND Y BASE DE DATOS
+Diagrama de Microservicios (Conceptual)
+[FRONTEND - React/Next.js]
+       | (REST/GraphQL/WebSockets)
+       V
+[API GATEWAY - Node.js/NestJS]
+       |
+       |---[AUTH SERVICE] (User Management, JWT)
+       |       ^
+       |       | (Database: PostgreSQL)
+       |       V
+       |---[CONTENT SERVICE] (Modules, Lessons, Resources)
+       |       ^
+       |       | (Database: PostgreSQL, S3/GCS for media)
+       |       V
+       |---[ASSESSMENT SERVICE] (Questions, Quizzes, OSCEs, Grading)
+       |       ^
+       |       | (Database: PostgreSQL)
+       |       V
+       |---[COLLABORATION SERVICE] (Forums, Chat, COIL Activities)
+       |       ^
+       |       | (Database: MongoDB/PostgreSQL, WebSockets)
+       |       V
+       |---[ANALYTICS SERVICE] (xAPI LRS, Learning Dashboards)
+       |       ^
+       |       | (Database: PostgreSQL, NoSQL for raw xAPI)
+       |       V
+       |---[AI SERVICE - Python/FastAPI] (Tutor AI, Q-Generator, Case Assistant, Recommender)
+       |       ^
+       |       | (Integration with LLMs, ML Models, Vector DBs)
+       |       V
+       |---[GAMIFICATION SERVICE] (Levels, Badges, Leaderboards, Escape Rooms)
+               ^
+               | (Database: PostgreSQL, MongoDB for game states)
+               V
+Modelo de Base de Datos (Relacional - PostgreSQL - Esquema Simplificado)
+-- Tabla de Usuarios
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    university_id INT NOT NULL,
+    role VARCHAR(20) DEFAULT 'student' CHECK (role IN ('student', 'instructor', 'admin')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP,
+    -- Otros campos para perfil de usuario
+);
+
+-- Tabla de Universidades (para el COIL)
+CREATE TABLE universities (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    country VARCHAR(50) NOT NULL,
+    code VARCHAR(10) UNIQUE NOT NULL
+);
+
+-- Tabla de Cursos
+CREATE TABLE courses (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    university_id INT REFERENCES universities(id),
+    instructor_id INT REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Módulos Académicos (ej. Sistema Cardiovascular)
+CREATE TABLE modules (
+    id SERIAL PRIMARY KEY,
+    course_id INT REFERENCES courses(id),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    order_index INT NOT NULL,
+    learning_objectives TEXT[], -- Array de objetivos
+    clinical_competencies TEXT[], -- Array de competencias
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Lecciones/Contenido dentro de los módulos
+CREATE TABLE lessons (
+    id SERIAL PRIMARY KEY,
+    module_id INT REFERENCES modules(id),
+    title VARCHAR(255) NOT NULL,
+    content_type VARCHAR(50) CHECK (content_type IN ('text', 'video', 'image_gallery', '3d_model', 'case_study', 'simulation')),
+    content_url TEXT, -- URL a S3/GCS o a un microservicio de contenido
+    order_index INT NOT NULL,
+    is_scorm BOOLEAN DEFAULT FALSE,
+    scorm_manifest_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Recursos Multimedia (vinculados a lecciones o casos)
+CREATE TABLE media_resources (
+    id SERIAL PRIMARY KEY,
+    lesson_id INT REFERENCES lessons(id),
+    media_type VARCHAR(50) CHECK (media_type IN ('image', 'video', '3d_model')),
+    url TEXT NOT NULL,
+    alt_text TEXT,
+    description TEXT
+);
+
+-- Tabla de Casos Clínicos
+CREATE TABLE clinical_cases (
+    id SERIAL PRIMARY KEY,
+    module_id INT REFERENCES modules(id),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    patient_data JSONB, -- Datos del paciente (anamnesis, examen, etc.)
+    diagnosis TEXT,
+    treatment_plan TEXT,
+    is_interactive BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Evaluaciones
+CREATE TABLE assessments (
+    id SERIAL PRIMARY KEY,
+    module_id INT REFERENCES modules(id),
+    title VARCHAR(255) NOT NULL,
+    assessment_type VARCHAR(50) CHECK (assessment_type IN ('quiz', 'osce', 'abp', 'image_diagnosis')),
+    max_score INT,
+    due_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Preguntas (para quizzes, AI)
+CREATE TABLE questions (
+    id SERIAL PRIMARY KEY,
+    assessment_id INT REFERENCES assessments(id),
+    question_text TEXT NOT NULL,
+    question_type VARCHAR(50) CHECK (question_type IN ('mcq', 'true_false', 'short_answer', 'drag_drop', 'hotspot')),
+    options JSONB, -- Opciones para MCQ
+    correct_answer TEXT,
+    explanation TEXT,
+    difficulty INT,
+    tags TEXT[] -- Tags para filtrado y adaptabilidad
+);
+
+-- Tabla de Registros de xAPI (Learning Record Store - LRS)
+CREATE TABLE xapi_statements (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    actor JSONB NOT NULL,    -- Objeto JSON con el actor (estudiante)
+    verb JSONB NOT NULL,     -- Objeto JSON con el verbo (completed, experienced, answered)
+    object JSONB NOT NULL,   -- Objeto JSON con el objeto (lección, pregunta, actividad)
+    result JSONB,            -- Objeto JSON con el resultado (score, response, duration)
+    context JSONB,           -- Objeto JSON con el contexto (curso, equipo COIL)
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    stored TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    authority JSONB,
+    version VARCHAR(20)
+);
+
+-- Tabla de Equipos COIL
+CREATE TABLE coil_teams (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    course_id INT REFERENCES courses(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Miembros de Equipo COIL
+CREATE TABLE coil_team_members (
+    id SERIAL PRIMARY KEY,
+    team_id INT REFERENCES coil_teams(id),
+    user_id INT REFERENCES users(id),
+    role VARCHAR(50) DEFAULT 'member'
+);
+
+-- Tabla de Gamificación - Perfiles de Jugador
+CREATE TABLE gamification_profiles (
+    user_id INT PRIMARY KEY REFERENCES users(id),
+    current_level INT DEFAULT 1,
+    xp BIGINT DEFAULT 0,
+    rank VARCHAR(50),
+    badges TEXT[] DEFAULT ARRAY[]::TEXT[], -- Array de insignias obtenidas
+    last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Gamificación - Logros
+CREATE TABLE achievements (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    xp_reward INT,
+    badge_image_url TEXT
+);
+
+-- Tabla de Gamificación - Historial de XP/Nivel
+CREATE TABLE xp_history (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    xp_change INT NOT NULL,
+    reason TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+5. EJEMPLOS DE INTERACCIÓN CON IA Y GAMIFICACIÓN
+Integración de IA (Backend - Concepto FastAPI/Python)
+# ai_service/main.py (Ejemplo simplificado con FastAPI)
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Dict
+import random
+
+app = FastAPI()
+
+class QuestionRequest(BaseModel):
+    topic: str
+    difficulty: str = "medium"
+    num_questions: int = 1
+
+class AIChatRequest(BaseModel):
+    user_message: str
+    context: List[Dict[str, str]] = [] # Historial de chat
+
+class CaseAssistanceRequest(BaseModel):
+    case_id: int
+    student_actions: List[str]
+    current_state: Dict
+
+@app.post("/generate-questions")
+async def generate_questions(req: QuestionRequest):
+    # Aquí se conectaría a un modelo de IA (ej. GPT-3/4, u otro fine-tuned)
+    # o a un banco de preguntas inteligente.
+    generated_questions = []
+    for _ in range(req.num_questions):
+        if req.topic.lower() == "corazon":
+            q = random.choice([
+                "¿Cuál es la función del nodo sinoauricular?",
+                "¿Qué arterias coronarias irrigan el ventrículo izquierdo?",
+                "Describa el flujo sanguíneo a través de las cámaras cardíacas."
+            ])
+            generated_questions.append({"question_text": q, "type": "mcq", "options": ["A", "B", "C"], "correct_answer": "A"})
+        else:
+            generated_questions.append({"question_text": f"Pregunta sobre {req.topic} de dificultad {req.difficulty}", "type": "text"})
+    return {"questions": generated_questions}
+
+@app.post("/ai-chat")
+async def ai_chat(req: AIChatRequest):
+    # Lógica de LLM para tutor virtual
+    last_user_msg = req.user_message.lower()
+    response = "No estoy seguro de entender. ¿Podrías reformular tu pregunta?"
+    if "diafragma" in last_user_msg:
+        response = "El diafragma es el principal músculo de la respiración. Su inervación proviene principalmente del nervio frénico, que se origina en las raíces C3, C4 y C5."
+    elif "huesos" in last_user_msg:
+        response = "El cuerpo humano adulto tiene 206 huesos. Se clasifican por su forma (largos, cortos, planos, irregulares, sesamoideos) y su ubicación (esqueleto axial y apendicular)."
+    elif "corazón" in last_user_msg:
+        response = "El corazón es un órgano vital encargado de bombear sangre. ¿Te gustaría saber sobre su anatomía, fisiología, o quizás alguna patología específica?"
+    
+    return {"ai_response": response}
+
+@app.post("/case-assistant/feedback")
+async def get_case_feedback(req: CaseAssistanceRequest):
+    # Aquí la IA analizaría las acciones del estudiante en un caso
+    # y proporcionaría feedback o sugerencias.
+    feedback = "Buen inicio, pero considera el historial de tabaquismo del paciente para el diagnóstico diferencial."
+    if "presión arterial alta" in req.current_state.get("symptoms", []):
+        feedback += " La presión arterial alta es un hallazgo clave que debes investigar a fondo."
+    
+    return {"feedback": feedback, "suggestions": ["Revisar guías de manejo de hipertensión.", "Considerar función renal."]}
+
+# ... otros endpoints para recomendación, feedback personalizado, etc.
+Lógica de Gamificación (Frontend - Gamification.js conceptual)
+// src/pages/Gamification.js
+import React, { useState, useEffect } from 'react';
+import { FaCrown, FaUserGraduate, FaMedal, FaSkullCrossbones } from 'react-icons/fa';
+import '../../styles/Gamification.css'; // Estilos específicos para gamificación
+
+const Gamification = () => {
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [userProfile, setUserProfile] = useState({});
+  const [achievements, setAchievements] = useState([]);
+  const [escapeRooms, setEscapeRooms] = useState([]);
+
+  useEffect(() => {
+    // Simular carga de datos de la API de Gamificación
+    const fetchGamificationData = async () => {
+      // Llamadas a microservicio de gamificación
+      const leaderboardData = [
+        { id: 1, name: "Maria L. (LUZ)", score: 12500, rank: 1, university: "LUZ" },
+        { id: 2, name: "Carlos P. (PUCE-SD)", score: 12100, rank: 2, university: "PUCE-SD" },
+        { id: 3, name: "Sofía M. (LUZ)", score: 11800, rank: 3, university: "LUZ" },
+        { id: 4, name: "David R. (PUCE-SD)", score: 11500, rank: 4, university: "PUCE-SD" },
+      ];
+      const profileData = {
+        level: 8,
+        xp: 9500,
+        rank: "Médico Residente II",
+        nextLevelXP: 10000,
+        badges: ["Anatomista Cardiaco", "Maestro de la Fisiología Pulmonar"]
+      };
+      const achievementsData = [
+        { id: 1, name: "Primer Diagnóstico", desc: "Completa tu primer caso clínico", icon: <FaUserGraduate /> },
+        { id: 2, name: "Colaborador Ejemplar", desc: "Participa activamente en 5 actividades COIL", icon: <FaUsers /> },
+        { id: 3, name: "Experto en Imágenes", desc: "Identifica correctamente 100 estructuras en radiografías", icon: <FaMedal /> },
+      ];
+      const escapeRoomsData = [
+        { id: 1, title: "Crisis en la UCI: Caso Sepsis", status: "pendiente", difficulty: "Difícil" },
+        { id: 2, title: "Misterio Renal: Falla Aguda", status: "completado", difficulty: "Medio" },
+      ];
+
+      setLeaderboard(leaderboardData);
+      setUserProfile(profileData);
+      setAchievements(achievementsData);
+      setEscapeRooms(escapeRoomsData);
+    };
+
+    fetchGamificationData();
+  }, []);
+
+  return (
+    <section className="gamification-page" aria-label="Sección de Gamificación">
+      <h2 className="page-title">Tu Centro de Gamificación</h2>
+
+      <div className="gamification-overview">
+        <div className="user-level-card">
+          <h3><FaUserGraduate /> Tu Nivel Actual: {userProfile.level}</h3>
+          <p>Rango: **{userProfile.rank}**</p>
+          <p>XP: {userProfile.xp} / {userProfile.nextLevelXP}</p>
+          <div className="progress-bar-container">
+            <div className="progress-bar" style={{ width: `${(userProfile.xp / userProfile.nextLevelXP) * 100}%` }}>
+              {Math.round((userProfile.xp / userProfile.nextLevelXP) * 100)}%
+            </div>
+          </div>
+        </div>
+
+        <div className="user-badges-card">
+          <h3><FaMedal /> Insignias Obtenidas</h3>
+          <div className="badge-list">
+            {userProfile.badges && userProfile.badges.length > 0 ? (
+              userProfile.badges.map((badge, index) => (
+                <span key={index} className="badge-item">{badge}</span>
+              ))
+            ) : (
+              <p>¡Aún no has ganado insignias! Completa desafíos para empezar.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="gamification-sections">
+        <div className="leaderboard-section">
+          <h3><FaCrown /> Ranking Global</h3>
+          <ol className="leaderboard-list">
+            {leaderboard.map((player) => (
+              <li key={player.id} className="leaderboard-item">
+                <span className="player-rank">#{player.rank}</span>
+                <span className="player-name">{player.name}</span>
+                <span className="player-score">{player.score} XP</span>
+                <span className="player-university">{player.university}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="escape-rooms-section">
+          <h3><FaSkullCrossbones /> Escape Rooms Clínicos</h3>
+          <div className="escape-room-list">
+            {escapeRooms.map((room) => (
+              <div key={room.id} className={`escape-room-card ${room.status}`}>
+                <h4>{room.title}</h4>
+                <p>Dificultad: {room.difficulty}</p>
+                <p>Estado: <span className={`status-${room.status}`}>{room.status}</span></p>
+                <button className="btn-primary" disabled={room.status === 'completado'}>
+                  {room.status === 'completado' ? 'Completado' : 'Iniciar Escape Room'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="achievements-section">
+        <h3>Logros Disponibles</h3>
+        <div className="achievement-list">
+          {achievements.map((achievement) => (
+            <div key={achievement.id} className="achievement-card">
+              {achievement.icon}
+              <h4>{achievement.name}</h4>
+              <p>{achievement.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Gamification;
