@@ -1,0 +1,3655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MED-COIL - Plataforma de Aprendizaje Médico</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+
+  <style>
+    /* ============================================================
+       VARIABLES Y RESET
+    ============================================================ */
+    :root {
+      --primary-color: #007bff;
+      --primary-dark: #0056b3;
+      --secondary-color: #6c757d;
+      --secondary-dark: #5a6268;
+      --accent-color: #28a745;
+      --danger-color: #dc3545;
+      --warning-color: #fd7e14;
+      --bg-light: #f8f9fa;
+      --bg-dark: #343a40;
+      --bg-darker: #23272b;
+      --text-dark: #212529;
+      --text-light: #f8f9fa;
+      --text-muted: rgba(255, 255, 255, 0.65);
+      --border-color: #dee2e6;
+      --header-height: 60px;
+      --sidebar-width: 260px;
+      --font-body: "Lato", sans-serif;
+      --font-heading: "Montserrat", sans-serif;
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --transition: 0.3s ease;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text-dark);
+      background-color: var(--bg-light);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+      font-family: var(--font-heading);
+      line-height: 1.25;
+      margin-bottom: 0.5em;
+    }
+
+    a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* ============================================================
+       BOTONES
+    ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      border: none;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background-color var(--transition),
+                  transform 0.1s ease,
+                  box-shadow var(--transition);
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid var(--primary-color);
+      outline-offset: 3px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      color: var(--text-light);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--secondary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+    }
+
+    .btn-accent {
+      background-color: var(--accent-color);
+      color: var(--text-light);
+    }
+
+    .btn-accent:hover {
+      background-color: #1e7e34;
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.82rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ============================================================
+       LAYOUT PRINCIPAL
+    ============================================================ */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       OVERLAY (para cerrar sidebar en móvil)
+    ============================================================ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    .app-header {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1.2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      z-index: 1000;
+      box-shadow: var(--shadow-md);
+      transition: left var(--transition);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .sidebar-toggle {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      transition: background-color var(--transition);
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .app-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-light);
+      text-decoration: none;
+    }
+
+    .app-logo h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0;
+      color: var(--text-light);
+      letter-spacing: 1.5px;
+    }
+
+    .logo-dot {
+      color: var(--primary-color);
+    }
+
+    .header-center {
+      flex: 1;
+      max-width: 520px;
+      margin: 0 1.5rem;
+      display: none;
+    }
+
+    .search-bar {
+      display: flex;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .search-bar input {
+      flex: 1;
+      border: none;
+      padding: 8px 14px;
+      background: transparent;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      outline: none;
+    }
+
+    .search-bar input::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .search-bar button {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: var(--text-light);
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background-color var(--transition);
+      font-size: 0.9rem;
+    }
+
+    .search-bar button:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.15rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition);
+    }
+
+    .icon-btn:hover {
+      background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      background-color: var(--danger-color);
+      color: #fff;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 20px;
+      line-height: 1.4;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: box-shadow var(--transition);
+      border: 2px solid rgba(255,255,255,0.25);
+    }
+
+    .user-avatar:hover {
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+    }
+
+    /* ============================================================
+       SIDEBAR
+    ============================================================ */
+    .app-sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-darker);
+      position: fixed;
+      top: 0;
+      left: calc(-1 * var(--sidebar-width));
+      height: 100vh;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--header-height);
+      box-shadow: var(--shadow-lg);
+      transition: left var(--transition);
+      overflow-y: auto;
+    }
+
+    .app-sidebar.open {
+      left: 0;
+    }
+
+    .sidebar-brand {
+      padding: 1rem 1.2rem 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-brand p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .sidebar-nav {
+      padding: 0.8rem 0;
+      flex: 1;
+    }
+
+    .nav-group-label {
+      padding: 0.6rem 1.2rem 0.2rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .nav-item {
+      margin: 2px 0.6rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 10px 14px;
+      color: rgba(255, 255, 255, 0.78);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 400;
+      transition: background-color var(--transition),
+                  color var(--transition);
+      border-left: 3px solid transparent;
+      text-decoration: none;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nav-link.active {
+      background-color: rgba(0, 123, 255, 0.22);
+      color: #fff;
+      border-left-color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .nav-link i {
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--primary-color);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 20px;
+    }
+
+    .sidebar-divider {
+      margin: 0.6rem 1.2rem;
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-name {
+      font-size: 0.85rem;
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+
+    .sidebar-user-role {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 0;
+    }
+
+    .sidebar-copyright {
+      margin-top: 0.5rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* ============================================================
+       ÁREA DE CONTENIDO
+    ============================================================ */
+    .content-area {
+      flex: 1;
+      margin-left: 0;
+      padding-top: var(--header-height);
+      transition: margin-left var(--transition);
+      min-width: 0;
+    }
+
+    /* ============================================================
+       PÁGINAS - NAVEGACIÓN POR TABS
+    ============================================================ */
+    .page {
+      display: none;
+      padding: 1.8rem 1.2rem;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       ENCABEZADO DE PÁGINA
+    ============================================================ */
+    .page-header {
+      margin-bottom: 1.8rem;
+    }
+
+    .page-title {
+      font-size: 1.7rem;
+      color: var(--text-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .page-subtitle {
+      color: var(--secondary-color);
+      font-size: 0.9rem;
+    }
+
+    .page-title span {
+      color: var(--primary-color);
+    }
+
+    /* ============================================================
+       TARJETAS (WIDGETS)
+    ============================================================ */
+    .card {
+      background: #fff;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: 1.4rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0;
+    }
+
+    .card-title i {
+      color: var(--primary-color);
+    }
+
+    /* ============================================================
+       DASHBOARD - GRID
+    ============================================================ */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.4rem;
+      margin-bottom: 1.8rem;
+    }
+
+    /* Estadísticas rápidas */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.blue   { background: rgba(0,123,255,0.12); color: var(--primary-color); }
+    .stat-icon.green  { background: rgba(40,167,69,0.12);  color: var(--accent-color); }
+    .stat-icon.orange { background: rgba(253,126,20,0.12); color: var(--warning-color);}
+    .stat-icon.red    { background: rgba(220,53,69,0.12);  color: var(--danger-color); }
+
+    .stat-info p {
+      margin-bottom: 0;
+      font-size: 0.78rem;
+      color: var(--secondary-color);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      font-family: var(--font-heading);
+      color: var(--text-dark);
+      line-height: 1.1;
+    }
+
+    /* Barra de progreso */
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--secondary-color);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-track {
+      background: #e9ecef;
+      border-radius: 20px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 0.6rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 20px;
+      transition: width 0.7s ease-in-out;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .progress-bar-fill.orange {
+      background: linear-gradient(90deg, var(--warning-color), #ffcd39);
+    }
+
+    /* Lista de fechas límite */
+    .deadline-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.88rem;
+      gap: 1rem;
+    }
+
+    .deadline-list li:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .deadline-title {
+      flex: 1;
+      color: var(--text-dark);
+    }
+
+    .deadline-date {
+      background: rgba(0,123,255,0.1);
+      color: var(--primary-color);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Notificaciones */
+    .notification-list li {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.87rem;
+    }
+
+    .notification-list li:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .notif-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .notif-icon.info    { background: rgba(0,123,255,0.15); color: var(--primary-color); }
+    .notif-icon.success { background: rgba(40,167,69,0.15);  color: var(--accent-color); }
+    .notif-icon.warning { background: rgba(253,126,20,0.15); color: var(--warning-color);}
+
+    .notif-text {
+      flex: 1;
+      line-height: 1.4;
+      color: var(--text-dark);
+    }
+
+    .notif-time {
+      font-size: 0.72rem;
+      color: var(--secondary-color);
+      margin-top: 3px;
+    }
+
+    /* Widget COIL */
+    .coil-meeting-card {
+      background: linear-gradient(135deg, #007bff15, #28a74515);
+      border: 1px solid rgba(0,123,255,0.2);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .coil-meeting-card p {
+      font-size: 0.87rem;
+      color: var(--text-dark);
+      margin-bottom: 0.3rem;
+    }
+
+    .coil-meeting-card strong {
+      color: var(--primary-color);
+    }
+
+    .coil-partners {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .partner-badge {
+      background: var(--primary-color);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* Widget Gamificación */
+    .rank-display {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .rank-icon {
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+
+    .rank-info h4 {
+      font-size: 1rem;
+      color: var(--text-dark);
+      margin-bottom: 0.15rem;
+    }
+
+    .rank-info p {
+      font-size: 0.8rem;
+      color: var(--secondary-color);
+      margin-bottom: 0;
+    }
+
+    /* ============================================================
+       SECCIÓN TUTOR IA
+    ============================================================ */
+    .ai-tutor-section {
+      background: #fff;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      margin-top: 1.4rem;
+    }
+
+    .ai-tutor-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.4rem;
+      background: linear-gradient(135deg, var(--primary-color), #0056b3);
+      color: #fff;
+    }
+
+    .ai-tutor-header i {
+      font-size: 1.3rem;
+    }
+
+    .ai-tutor-header h3 {
+      margin-bottom: 0;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .ai-status {
+      margin-left: auto;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .ai-status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .chat-log {
+      height: 240px;
+      overflow-y: auto;
+      padding: 1.2rem 1.4rem;
+      background: #fafbfc;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      scroll-behavior: smooth;
+    }
+
+    .chat-message {
+      max-width: 80%;
+      padding: 0.6rem 0.9rem;
+      border-radius: var(--radius-md);
+      font-size: 0.87rem;
+      line-height: 1.5;
+    }
+
+    .chat-message.ai {
+      background: #e9ecef;
+      color: var(--text-dark);
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+
+    .chat-message.user {
+      background: var(--primary-color);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+
+    .chat-input-area {
+      display: flex;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      border: none;
+      padding: 12px 1rem;
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      outline: none;
+      background: #fff;
+    }
+
+    .chat-input-area input::placeholder {
+      color: #aaa;
+    }
+
+    .chat-input-area button {
+      border: none;
+      background: var(--primary-color);
+      color: #fff;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: background-color var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .chat-input-area button:hover {
+      background: var(--primary-dark);
+    }
+
+    /* ============================================================
+       PÁGINA - MÓDULOS
+    ============================================================ */
+    .modules-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .filter-btn {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      color: var(--secondary-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.83rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font-body);
+      font-weight: 600;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+    }
+
+    .module-card {
+      background: #fff;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+
+    .module-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+    }
+
+    .module-card-banner {
+      height: 10px;
+    }
+
+    .module-card-body {
+      padding: 1.2rem;
+    }
+
+    .module-meta {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.8rem;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .tag-anatomy  { background: rgba(0,123,255,0.12); color: var(--primary-color); }
+    .tag-physio   { background: rgba(40,167,69,0.12);  color: var(--accent-color); }
+    .tag-pathol   { background: rgba(220,53,69,0.12);  color: var(--danger-color); }
+    .tag-clinical { background: rgba(253,126,20,0.12); color: var(--warning-color);}
+    .tag-pharmacol{ background: rgba(108,117,125,0.12);color: var(--secondary-color);}
+
+    .module-card h4 {
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .module-card p {
+      font-size: 0.84rem;
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .module-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .module-progress-info {
+      font-size: 0.78rem;
+      color: var(--secondary-color);
+    }
+
+    /* ============================================================
+       PÁGINA - COIL
+    ============================================================ */
+    .coil-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.4rem;
+    }
+
+    .team-card {
+      background: #fff;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      padding: 1.3rem;
+    }
+
+    .team-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .team-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #007bff, #28a745);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .team-info h4 {
+      font-size: 0.98rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .team-info p {
+      font-size: 0.8rem;
+      color: var(--secondary-color);
+      margin-bottom: 0;
+    }
+
+    .team-status {
+      margin-left: auto;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .status-active   { background: rgba(40,167,69,0.15);  color: var(--accent-color); }
+    .status-pending  { background: rgba(253,126,20,0.15); color: var(--warning-color);}
+    .status-complete { background: rgba(0,123,255,0.15);  color: var(--primary-color); }
+
+    .team-members {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .member-chip {
+      background: var(--bg-light);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .member-chip i {
+      color: var(--secondary-color);
+      font-size: 0.7rem;
+    }
+
+    .team-progress {
+      margin-bottom: 1rem;
+    }
+
+    .team-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    /* Chat COIL */
+    .coil-chat {
+      background: #fff;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .coil-chat-header {
+      padding: 1rem 1.4rem;
+      background: linear-gradient(135deg, #28a745, #1e7e34);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .coil-chat-header h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0;
+      color: #fff;
+    }
+
+    .coil-messages {
+      height: 200px;
+      overflow-y: auto;
+      padding: 1rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .coil-msg {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .coil-msg-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .coil-msg-content p {
+      background: #f0f4f8;
+      padding: 7px 12px;
+      border-radius: 12px;
+      border-top-left-radius: 3px;
+      font-size: 0.84rem;
+      color: var(--text-dark);
+      margin-bottom: 0.2rem;
+    }
+
+    .coil-msg-meta {
+      font-size: 0.7rem;
+      color: var(--secondary-color);
+    }
+
+    /* ============================================================
+       PÁGINA - EVALUACIONES
+    ============================================================ */
+    .assessments-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+    }
+
+    .assessment-card {
+      background: #fff;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      padding: 1.3rem;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .assessment-card.quiz    { border-left-color: var(--primary-color); }
+    .assessment-card.osce    { border-left-color: var(--accent-color); }
+    .assessment-card.abp     { border-left-color: var(--warning-color); }
+    .assessment-card.imaging { border-left-color: var(--danger-color); }
+
+    .assessment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .assessment-header h4 {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .assessment-type-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .badge-quiz    { background: rgba(0,123,255,0.12); color: var(--primary-color); }
+    .badge-osce    { background: rgba(40,167,69,0.12);  color: var(--accent-color); }
+    .badge-abp     { background: rgba(253,126,20,0.12); color: var(--warning-color);}
+    .badge-imaging { background: rgba(220,53,69,0.12);  color: var(--danger-color); }
+
+    .assessment-details {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .assessment-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.82rem;
+      color: var(--secondary-color);
+    }
+
+    .assessment-detail-item i {
+      color: var(--primary-color);
+    }
+
+    .assessment-result {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem;
+      background: var(--bg-light);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+
+    .result-score {
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-family: var(--font-heading);
+      color: var(--accent-color);
+    }
+
+    .result-label {
+      font-size: 0.78rem;
+      color: var(--secondary-color);
+    }
+
+    /* ============================================================
+       PÁGINA - GAMIFICACIÓN
+    ============================================================ */
+    .gamification-hero {
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      color: #fff;
+      margin-bottom: 1.8rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gamification-hero::before {
+      content: "\f521";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 8rem;
+      opacity: 0.08;
+    }
+
+    .hero-level {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-rank {
+      font-size: 1.6rem;
+      font-weight: 700;
+      font-family: var(--font-heading);
+      margin-bottom: 0.3rem;
+    }
+
+    .hero-xp {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-bottom: 1rem;
+    }
+
+    .hero-progress-track {
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      height: 8px;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-progress-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #ffd700, #ffaa00);
+      transition: width 0.8s ease;
+    }
+
+    .hero-xp-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      opacity: 0.7;
+    }
+
+    .gamification-sections {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.4rem;
+      margin-bottom: 1.8rem;
+    }
+
+    /* Leaderboard */
+    .leaderboard-list li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .leaderboard-list li:last-child {
+      border-bottom: none;
+    }
+
+    .lb-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .lb-rank.gold   { background: #ffd700; color: #7a5f00; }
+    .lb-rank.silver { background: #c0c0c0; color: #4a4a4a; }
+    .lb-rank.bronze { background: #cd7f32; color: #fff; }
+
+    .lb-name {
+      flex: 1;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .lb-university {
+      font-size: 0.72rem;
+      color: var(--secondary-color);
+    }
+
+    .lb-score {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    /* Insignias */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 1rem;
+    }
+
+    .badge-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 1rem 0.5rem;
+      background: var(--bg-light);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      gap: 0.5rem;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+
+    .badge-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .badge-card.locked {
+      opacity: 0.45;
+      filter: grayscale(1);
+    }
+
+    .badge-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .badge-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    /* Escape Rooms */
+    .escape-rooms-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .escape-room-card {
+      background: #fff;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      padding: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .er-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .er-icon.hard   { background: rgba(220,53,69,0.12);  color: var(--danger-color); }
+    .er-icon.medium { background: rgba(253,126,20,0.12); color: var(--warning-color);}
+    .er-icon.easy   { background: rgba(40,167,69,0.12);  color: var(--accent-color); }
+
+    .er-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .er-info h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .er-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .er-meta span {
+      font-size: 0.78rem;
+      color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* ============================================================
+       PÁGINA - PERFIL
+    ============================================================ */
+    .profile-hero {
+      background: linear-gradient(135deg, var(--primary-color), #0056b3);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      color: #fff;
+      margin-bottom: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      border: 3px solid rgba(255,255,255,0.5);
+      flex-shrink: 0;
+    }
+
+    .profile-hero-info h3 {
+      font-size: 1.4rem;
+      margin-bottom: 0.2rem;
+      color: #fff;
+    }
+
+    .profile-hero-info p {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-tag {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.4rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      color: var(--text-dark);
+      background: #fff;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    /* ============================================================
+       UTILIDADES
+    ============================================================ */
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+
+    .text-muted  { color: var(--secondary-color); font-size: 0.85rem; }
+    .text-center { text-align: center; }
+    .text-primary{ color: var(--primary-color); }
+    .text-success{ color: var(--accent-color); }
+    .text-danger { color: var(--danger-color); }
+
+    .d-flex { display: flex; }
+    .align-center { align-items: center; }
+    .gap-1 { gap: 0.5rem; }
+    .gap-2 { gap: 1rem; }
+    .flex-wrap { flex-wrap: wrap; }
+    .justify-between { justify-content: space-between; }
+
+    .section-divider {
+      margin: 1.8rem 0;
+      border: none;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* Spinner de carga */
+    .loading-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .loading-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      animation: bounce-dot 1.4s infinite ease-in-out;
+    }
+
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce-dot {
+      0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+      40%           { transform: scale(1);   opacity: 1; }
+    }
+
+    /* Toast notification */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .toast {
+      background: var(--bg-dark);
+      color: #fff;
+      padding: 0.8rem 1.2rem;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      animation: slideInRight 0.3s ease, fadeOut 0.4s ease 2.6s forwards;
+      max-width: 320px;
+    }
+
+    .toast.success { border-left: 3px solid var(--accent-color); }
+    .toast.info    { border-left: 3px solid var(--primary-color); }
+    .toast.warning { border-left: 3px solid var(--warning-color); }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to   { opacity: 0; pointer-events: none; }
+    }
+
+    /* ============================================================
+       RESPONSIVE - TABLET (768px)
+    ============================================================ */
+    @media (min-width: 768px) {
+      .app-header {
+        left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+      }
+
+      .header-center {
+        display: flex;
+      }
+
+      .sidebar-toggle {
+        display: none;
+      }
+
+      .app-sidebar {
+        left: 0;
+      }
+
+      .content-area {
+        margin-left: var(--sidebar-width);
+        padding-top: calc(var(--header-height) + 1.8rem);
+        padding-left: 1.8rem;
+        padding-right: 1.8rem;
+        padding-bottom: 2rem;
+      }
+
+      .page {
+        padding: 0;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .modules-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .assessments-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .escape-rooms-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .coil-grid {
+        grid-template-columns: 3fr 2fr;
+      }
+
+      .profile-grid {
+        grid-template-columns: 5fr 3fr;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .gamification-sections {
+        grid-template-columns: 3fr 2fr;
+      }
+    }
+
+    /* ============================================================
+       RESPONSIVE - DESKTOP (1200px)
+    ============================================================ */
+    @media (min-width: 1200px) {
+      .modules-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .assessments-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* ============================================================
+       ACCESIBILIDAD
+    ============================================================ */
+    :focus-visible {
+      outline: 3px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Skip link */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 1rem;
+      background: var(--primary-color);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      font-weight: 700;
+      z-index: 9999;
+      transition: top 0.2s ease;
+    }
+
+    .skip-link:focus {
+      top: 0;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Skip link para accesibilidad -->
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+  <!-- Overlay para cerrar sidebar en móvil -->
+  <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <div class="app-container">
+
+    <!-- ============================================================
+         HEADER
+    ============================================================ -->
+    <header class="app-header" role="banner" aria-label="Encabezado de la aplicación">
+
+      <div class="header-left">
+        <button
+          class="sidebar-toggle"
+          id="sidebarToggle"
+          aria-label="Abrir o cerrar menú lateral"
+          aria-expanded="false"
+          aria-controls="appSidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a href="#" class="app-logo" aria-label="MED-COIL - Ir al inicio" onclick="showPage('dashboard', event)">
+          <h1>MED<span class="logo-dot">·</span>COIL</h1>
+        </a>
+      </div>
+
+      <div class="header-center">
+        <form class="search-bar" role="search" onsubmit="handleSearch(event)">
+          <input
+            type="search"
+            id="globalSearch"
+            placeholder="Buscar módulos, casos, estudiantes..."
+            aria-label="Búsqueda global"
+            autocomplete="off"
+          />
+          <button type="submit" aria-label="Buscar">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+
+      <nav class="header-right" aria-label="Acciones de usuario">
+        <button
+          class="icon-btn"
+          aria-label="Ver notificaciones (3 nuevas)"
+          onclick="showPage('dashboard', event)"
+        >
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge" aria-hidden="true">3</span>
+        </button>
+
+        <button
+          class="icon-btn"
+          aria-label="Configuración"
+          onclick="showToast('Configuración próximamente', 'info')"
+        >
+          <i class="fas fa-cog"></i>
+        </button>
+
+        <div
+          class="user-avatar"
+          role="button"
+          tabindex="0"
+          aria-label="Menú de usuario - Dr. Ana García"
+          onclick="showPage('profile', event)"
+          onkeypress="if(event.key==='Enter') showPage('profile', event)"
+          title="Ir al perfil"
+        >
+          AG
+        </div>
+      </nav>
+    </header><!-- /header -->
+
+    <!-- ============================================================
+         SIDEBAR
+    ============================================================ -->
+    <aside
+      class="app-sidebar"
+      id="appSidebar"
+      aria-label="Navegación principal"
+    >
+      <div class="sidebar-brand">
+        <p>Menú principal</p>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Secciones de la aplicación">
+
+        <p class="nav-group-label">Principal</p>
+
+        <ul>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link active"
+              id="nav-dashboard"
+              onclick="showPage('dashboard', event)"
+              aria-label="Panel de control"
+              aria-current="page"
+            >
+              <i class="fas fa-home" aria-hidden="true"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              id="nav-modules"
+              onclick="showPage('modules', event)"
+              aria-label="Módulos académicos"
+            >
+              <i class="fas fa-book-medical" aria-hidden="true"></i>
+              <span>Módulos Académicos</span>
+              <span class="nav-badge">12</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="sidebar-divider" />
+        <p class="nav-group-label">Colaboración</p>
+
+        <ul>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              id="nav-coil"
+              onclick="showPage('coil', event)"
+              aria-label="Colaboración COIL internacional"
+            >
+              <i class="fas fa-users" aria-hidden="true"></i>
+              <span>Colaboración COIL</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="sidebar-divider" />
+        <p class="nav-group-label">Evaluación y Progreso</p>
+
+        <ul>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              id="nav-assessments"
+              onclick="showPage('assessments', event)"
+              aria-label="Evaluaciones y pruebas"
+            >
+              <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+              <span>Evaluaciones</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              id="nav-gamification"
+              onclick="showPage('gamification', event)"
+              aria-label="Sistema de gamificación"
+            >
+              <i class="fas fa-gamepad" aria-hidden="true"></i>
+              <span>Gamificación</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              id="nav-analytics"
+              onclick="showPage('analytics', event)"
+              aria-label="Analíticas de aprendizaje"
+            >
+              <i class="fas fa-chart-bar" aria-hidden="true"></i>
+              <span>Analíticas</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="sidebar-divider" />
+        <p class="nav-group-label">Cuenta</p>
+
+        <ul>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              id="nav-profile"
+              onclick="showPage('profile', event)"
+              aria-label="Mi perfil"
+            >
+              <i class="fas fa-user-circle" aria-hidden="true"></i>
+              <span>Mi Perfil</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              onclick="showToast('Abriendo ayuda...', 'info')"
+              aria-label="Ayuda y soporte"
+            >
+              <i class="fas fa-question-circle" aria-hidden="true"></i>
+              <span>Ayuda</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-avatar" aria-hidden="true">AG</div>
+          <div>
+            <p class="sidebar-user-name">Dr. Ana García</p>
+            <p class="sidebar-user-role">Estudiante — PUCE-SD</p>
+          </div>
+        </div>
+        <p class="sidebar-copyright">© 2026 MED-COIL Platform</p>
+      </div>
+    </aside><!-- /sidebar -->
+
+    <!-- ============================================================
+         ÁREA DE CONTENIDO PRINCIPAL
+    ============================================================ -->
+    <main class="content-area" id="main-content" tabindex="-1">
+
+      <!-- ==================== DASHBOARD ==================== -->
+      <section
+        class="page active"
+        id="page-dashboard"
+        aria-label="Panel de control"
+      >
+        <div class="page-header">
+          <h2 class="page-title">
+            Bienvenida, <span>Dr. Ana García</span> 👋
+          </h2>
+          <p class="page-subtitle">
+            Universidad PUCE-SD &nbsp;|&nbsp; Facultad de Medicina &nbsp;|&nbsp;
+            <span id="currentDate"></span>
+          </p>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="stats-grid" aria-label="Estadísticas del estudiante">
+          <div class="stat-card">
+            <div class="stat-icon blue" aria-hidden="true">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div class="stat-info">
+              <p>Módulos Activos</p>
+              <div class="stat-value">4</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green" aria-hidden="true">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <p>Completados</p>
+              <div class="stat-value">9</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange" aria-hidden="true">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-info">
+              <p>XP Acumulados</p>
+              <div class="stat-value">9,500</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red" aria-hidden="true">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+              <p>Equipos COIL</p>
+              <div class="stat-value">2</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid principal del dashboard -->
+        <div class="dashboard-grid">
+
+          <!-- Widget Progreso Académico -->
+          <div class="card" aria-labelledby="progress-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="progress-heading">
+                <i class="fas fa-chart-line" aria-hidden="true"></i>
+                Progreso Académico
+              </h3>
+              <button class="btn btn-primary btn-sm" onclick="showPage('modules', event)">
+                Continuar
+              </button>
+            </div>
+
+            <p class="text-muted mb-2">Módulo actual: <strong>Sistema Cardiovascular</strong></p>
+
+            <div class="progress-label" aria-hidden="true">
+              <span>Progreso general</span>
+              <span>75%</span>
+            </div>
+            <div
+              class="progress-bar-track"
+              role="progressbar"
+              aria-valuenow="75"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-label="Progreso general: 75%"
+            >
+              <div class="progress-bar-fill" style="width: 75%"></div>
+            </div>
+
+            <div class="progress-label" aria-hidden="true">
+              <span>Evaluaciones aprobadas</span>
+              <span>60%</span>
+            </div>
+            <div
+              class="progress-bar-track"
+              role="progressbar"
+              aria-valuenow="60"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-label="Evaluaciones aprobadas: 60%"
+            >
+              <div class="progress-bar-fill orange" style="width: 60%"></div>
+            </div>
+          </div>
+
+          <!-- Widget Fechas Límite -->
+          <div class="card" aria-labelledby="deadlines-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="deadlines-heading">
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                Próximas Fechas Límite
+              </h3>
+            </div>
+            <ul class="deadline-list">
+              <li>
+                <span class="deadline-title">Examen de Anatomía Cardíaca</span>
+                <span class="deadline-date">01 May 2026</span>
+              </li>
+              <li>
+                <span class="deadline-title">Caso Clínico COIL: Miocardiopatías</span>
+                <span class="deadline-date">28 Abr 2026</span>
+              </li>
+              <li>
+                <span class="deadline-title">Quiz de Farmacología Cardiovascular</span>
+                <span class="deadline-date">03 May 2026</span>
+              </li>
+              <li>
+                <span class="deadline-title">Presentación ABP — Insuficiencia Cardíaca</span>
+                <span class="deadline-date">07 May 2026</span>
+              </li>
+            </ul>
+            <button class="btn btn-secondary btn-sm mt-2" onclick="showPage('assessments', event)">
+              Ver todas las evaluaciones
+            </button>
+          </div>
+
+          <!-- Widget COIL -->
+          <div class="card" aria-labelledby="coil-dashboard-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="coil-dashboard-heading">
+                <i class="fas fa-users" aria-hidden="true"></i>
+                Colaboración COIL
+              </h3>
+              <span class="team-status status-active">Activo</span>
+            </div>
+            <div class="coil-meeting-card">
+              <p>📅 Próximo encuentro virtual:</p>
+              <p><strong>Jueves 25 de abril, 10:00 AM (UTC-5)</strong></p>
+              <p style="font-size:0.8rem; margin-top:0.4rem;">Tema: Diagnóstico diferencial en Miocardiopatías</p>
+              <div class="coil-partners">
+                <span class="partner-badge">PUCE-SD</span>
+                <span class="partner-badge">LUZ Venezuela</span>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showPage('coil', event)">
+              <i class="fas fa-video" aria-hidden="true"></i> Ir a Colaboración COIL
+            </button>
+          </div>
+
+          <!-- Widget Notificaciones -->
+          <div class="card" aria-labelledby="notif-dashboard-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="notif-dashboard-heading">
+                <i class="fas fa-bell" aria-hidden="true"></i>
+                Notificaciones
+              </h3>
+              <span
+                style="background:var(--danger-color);color:#fff;font-size:0.72rem;
+                       font-weight:700;padding:2px 8px;border-radius:20px;"
+              >3 nuevas</span>
+            </div>
+            <ul class="notification-list" aria-live="polite">
+              <li>
+                <div class="notif-icon info" aria-hidden="true">
+                  <i class="fas fa-info"></i>
+                </div>
+                <div class="notif-text">
+                  Nueva actividad en «Colaboración COIL: Caso Renal»
+                  <div class="notif-time">Hace 10 minutos</div>
+                </div>
+              </li>
+              <li>
+                <div class="notif-icon success" aria-hidden="true">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="notif-text">
+                  Tu equipo subió un nuevo avance en el ABP
+                  <div class="notif-time">Hace 1 hora</div>
+                </div>
+              </li>
+              <li>
+                <div class="notif-icon warning" aria-hidden="true">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="notif-text">
+                  Recordatorio: Examen de Anatomía Cardíaca en 3 días
+                  <div class="notif-time">Hace 2 horas</div>
+                </div>
+              </li>
+            </ul>
+            <button class="btn btn-secondary btn-sm mt-2">
+              Ver todas las notificaciones
+            </button>
+          </div>
+
+          <!-- Widget Gamificación -->
+          <div class="card" aria-labelledby="gamif-dashboard-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="gamif-dashboard-heading">
+                <i class="fas fa-trophy" aria-hidden="true"></i>
+                Progreso Gamificado
+              </h3>
+            </div>
+            <div class="rank-display">
+              <div class="rank-icon" aria-hidden="true">🥉</div>
+              <div class="rank-info">
+                <h4>Médico Residente II</h4>
+                <p>Nivel 8 &nbsp;|&nbsp; Posición #15 en ranking global</p>
+              </div>
+            </div>
+            <div class="progress-label" aria-hidden="true">
+              <span>9,500 XP</span>
+              <span>10,000 XP (Nivel 9)</span>
+            </div>
+            <div
+              class="progress-bar-track"
+              role="progressbar"
+              aria-valuenow="95"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-label="Progreso XP al siguiente nivel: 95%"
+            >
+              <div class="progress-bar-fill" style="width: 95%"></div>
+            </div>
+            <button class="btn btn-primary btn-sm mt-2" onclick="showPage('gamification', event)">
+              <i class="fas fa-gamepad" aria-hidden="true"></i> Explorar Gamificación
+            </button>
+          </div>
+
+        </div><!-- /dashboard-grid -->
+
+        <!-- ===== TUTOR IA ===== -->
+        <div class="ai-tutor-section" aria-labelledby="ai-tutor-heading">
+          <div class="ai-tutor-header">
+            <i class="fas fa-robot" aria-hidden="true"></i>
+            <h3 id="ai-tutor-heading">Genflow — Tu Tutor de IA Médica</h3>
+            <span class="ai-status">En línea</span>
+          </div>
+
+          <div
+            class="chat-log"
+            id="chatLog"
+            role="log"
+            aria-live="polite"
+            aria-label="Conversación con el tutor de IA"
+          >
+            <div class="chat-message ai">
+              Hola <strong>Dr. Ana García</strong>, soy Genflow, tu asistente médico de IA.
+              Puedo ayudarte con dudas anatómicas, fisiológicas, farmacológicas o de casos clínicos. ¿En qué puedo ayudarte hoy?
+            </div>
+            <div class="chat-message user">
+              ¿Cuál es la inervación del diafragma?
+            </div>
+            <div class="chat-message ai">
+              El diafragma está inervado principalmente por el <strong>nervio frénico (C3–C5)</strong>,
+              que controla su función motora. También recibe inervación sensitiva periférica de los nervios
+              intercostales (T5–T11) y subcostal (T12). Una forma de recordarlo:
+              <em>"C3, 4 y 5 mantienen el diafragma vivo"</em>.
+            </div>
+          </div>
+
+          <form
+            class="chat-input-area"
+            onsubmit="sendAIMessage(event)"
+            aria-label="Formulario para enviar pregunta al tutor"
+          >
+            <input
+              type="text"
+              id="chatInput"
+              placeholder="Escribe tu pregunta médica aquí..."
+              aria-label="Pregunta para el tutor de IA"
+              autocomplete="off"
+            />
+            <button type="submit" aria-label="Enviar pregunta">
+              <i class="fas fa-paper-plane" aria-hidden="true"></i> Enviar
+            </button>
+          </form>
+        </div><!-- /ai-tutor-section -->
+
+      </section><!-- /page-dashboard -->
+
+      <!-- ==================== MÓDULOS ==================== -->
+      <section
+        class="page"
+        id="page-modules"
+        aria-label="Módulos académicos"
+      >
+        <div class="page-header">
+          <h2 class="page-title">Módulos <span>Académicos</span></h2>
+          <p class="page-subtitle">
+            Explora los módulos de tu plan de estudios médico
+          </p>
+        </div>
+
+        <!-- Filtros -->
+        <div class="modules-filter" role="group" aria-label="Filtros de módulos">
+          <button class="filter-btn active" onclick="filterModules(this, 'all')">Todos</button>
+          <button class="filter-btn" onclick="filterModules(this, 'anatomy')">Anatomía</button>
+          <button class="filter-btn" onclick="filterModules(this, 'physio')">Fisiología</button>
+          <button class="filter-btn" onclick="filterModules(this, 'pathol')">Patología</button>
+          <button class="filter-btn" onclick="filterModules(this, 'clinical')">Clínica</button>
+          <button class="filter-btn" onclick="filterModules(this, 'pharmacol')">Farmacología</button>
+        </div>
+
+        <div class="modules-grid" id="modulesGrid">
+
+          <!-- Módulo 1 -->
+          <article class="module-card" data-category="anatomy clinical">
+            <div class="module-card-banner" style="background: linear-gradient(90deg,#007bff,#0056b3);"></div>
+            <div class="module-card-body">
+              <div class="module-meta">
+                <span class="tag tag-anatomy">Anatomía</span>
+                <span class="tag tag-clinical">Clínica</span>
+              </div>
+              <h4>Sistema Cardiovascular</h4>
+              <p>Anatomía funcional del corazón, grandes vasos, circulación coronaria y bases para el diagnóstico clínico.</p>
+              <div class="progress-label">
+                <span>Progreso</span><span>75%</span>
+              </div>
+              <div class="progress-bar-track" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso: 75%">
+                <div class="progress-bar-fill" style="width:75%"></div>
+              </div>
+              <div class="module-footer">
+                <span class="module-progress-info">18 / 24 lecciones</span>
+                <button class="btn btn-primary btn-sm" onclick="showToast('Abriendo módulo: Sistema Cardiovascular', 'info')">
+                  Continuar <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Módulo 2 -->
+          <article class="module-card" data-category="physio">
+            <div class="module-card-banner" style="background: linear-gradient(90deg,#28a745,#1e7e34);"></div>
+            <div class="module-card-body">
+              <div class="module-meta">
+                <span class="tag tag-physio">Fisiología</span>
+              </div>
+              <h4>Fisiología Respiratoria</h4>
+              <p>Mecánica ventilatoria, intercambio gaseoso, control de la respiración y adaptaciones fisiopatológicas.</p>
+              <div class="progress-label">
+                <span>Progreso</span><span>48%</span>
+              </div>
+              <div class="progress-bar-track" role="progressbar" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso: 48%">
+                <div class="progress-bar-fill" style="width:48%"></div>
+              </div>
+              <div class="module-footer">
+                <span class="module-progress-info">10 / 21 lecciones</span>
+                <button class="btn btn-primary btn-sm" onclick="showToast('Abriendo módulo: Fisiología Respiratoria', 'info')">
+                  Continuar <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Módulo 3 -->
+          <article class="module-card" data-category="pathol">
+            <div class="module-card-banner" style="background: linear-gradient(90deg,#dc3545,#a71d2a);"></div>
+            <div class="module-card-body">
+              <div class="module-meta">
+                <span class="tag tag-pathol">Patología</span>
+              </div>
+              <h4>Patología Renal</h4>
+              <p>Glomerulopatías, nefropatías tubulointersticiales, insuficiencia renal aguda y crónica, con enfoque en casos clínicos.</p>
+              <div class="progress-label">
+                <span>Progreso</span><span>20%</span>
+              </div>
+              <div class="progress-bar-track" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso: 20%">
+                <div class="progress-bar-fill orange" style="width:20%"></div>
+              </div>
+              <div class="module-footer">
+                <span class="module-progress-info">4 / 20 lecciones</span>
+                <button class="btn btn-primary btn-sm" onclick="showToast('Abriendo módulo: Patología Renal', 'info')">
+                  Iniciar <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Módulo 4 -->
+          <article class="module-card" data-category="pharmacol">
+            <div class="module-card-banner" style="background: linear-gradient(90deg,#6c757d,#495057);"></div>
+            <div class="module-card-body">
+              <div class="module-meta">
+                <span class="tag tag-pharmacol">Farmacología</span>
+              </div>
+              <h4>Farmacología Cardiovascular</h4>
+              <p>Antihipertensivos, antiarrítmicos, inotrópicos, diuréticos y anticoagulantes: mecanismos, indicaciones y efectos adversos.</p>
+              <div class="progress-label">
+                <span>Progreso</span><span>0%</span>
+              </div>
+              <div class="progress-bar-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso: 0%">
+                <div class="progress-bar-fill" style="width:0%"></div>
+              </div>
+              <div class="module-footer">
+                <span class="module-progress-info">0 / 18 lecciones</span>
+                <button class="btn btn-accent btn-sm" onclick="showToast('Iniciando módulo de Farmacología', 'success')">
+                  Iniciar <i class="fas fa-play" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Módulo 5 -->
+          <article class="module-card" data-category="anatomy">
+            <div class="module-card-banner" style="background: linear-gradient(90deg,#17a2b8,#117a8b);"></div>
+            <div class="module-card-body">
+              <div class="module-meta">
+                <span class="tag tag-anatomy">Anatomía</span>
+              </div>
+              <h4>Neuroanatomía Clínica</h4>
+              <p>Sistema nervioso central y periférico: vías motoras, sensitivas, nervios craneales y correlaciones clínicas esenciales.</p>
+              <div class="progress-label">
+                <span>Progreso</span><span>100%</span>
+              </div>
+              <div class="progress-bar-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso: 100% (completado)">
+                <div class="progress-bar-fill" style="width:100%"></div>
+              </div>
+              <div class="module-footer">
+                <span class="module-progress-info text-success">
+                  <i class="fas fa-check-circle" aria-hidden="true"></i> Completado
+                </span>
+                <button class="btn btn-secondary btn-sm" onclick="showToast('Revisando módulo completado', 'info')">
+                  Revisar
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Módulo 6 -->
+          <article class="module-card" data-category="clinical">
+            <div class="module-card-banner" style="background: linear-gradient(90deg,#fd7e14,#c96200);"></div>
+            <div class="module-card-body">
+              <div class="module-meta">
+                <span class="tag tag-clinical">Clínica</span>
+              </div>
+              <h4>Semiología Médica</h4>
+              <p>Técnicas de anamnesis, exploración física sistemática, semiología cardiovascular, respiratoria, abdominal y neurológica.</p>
+              <div class="progress-label">
+                <span>Progreso</span><span>35%</span>
+              </div>
+              <div class="progress-bar-track" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso: 35%">
+                <div class="progress-bar-fill orange" style="width:35%"></div>
+              </div>
+              <div class="module-footer">
+                <span class="module-progress-info">9 / 26 lecciones</span>
+                <button class="btn btn-primary btn-sm" onclick="showToast('Abriendo módulo: Semiología Médica', 'info')">
+                  Continuar <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+
+        </div><!-- /modules-grid -->
+      </section><!-- /page-modules -->
+
+      <!-- ==================== COIL ==================== -->
+      <section
+        class="page"
+        id="page-coil"
+        aria-label="Colaboración COIL"
+      >
+        <div class="page-header">
+          <h2 class="page-title">Colaboración <span>COIL</span></h2>
+          <p class="page-subtitle">
+            Aprendizaje colaborativo internacional entre PUCE-SD (Ecuador) y LUZ (Venezuela)
+          </p>
+        </div>
+
+        <div class="coil-grid">
+          <!-- Lista de equipos -->
+          <div>
+            <h3 style="font-size:1rem; margin-bottom:1rem;">
+              <i class="fas fa-users" aria-hidden="true" style="color:var(--primary-color)"></i>
+              Mis Equipos
+            </h3>
+
+            <!-- Equipo 1 -->
+            <div class="team-card mb-2">
+              <div class="team-header">
+                <div class="team-avatar" aria-hidden="true">
+                  <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="team-info">
+                  <h4>Equipo Cardiovascular Alpha</h4>
+                  <p>Caso: Diagnóstico diferencial en Miocardiopatías</p>
+                </div>
+                <span class="team-status status-active">Activo</span>
+              </div>
+              <div class="team-members" aria-label="Miembros del equipo">
+                <span class="member-chip">
+                  <i class="fas fa-user" aria-hidden="true"></i> Ana G. (PUCE-SD)
+                </span>
+                <span class="member-chip">
+                  <i class="fas fa-user" aria-hidden="true"></i> Carlos P. (PUCE-SD)
+                </span>
+                <span class="member-chip">
+                  <i class="fas fa-user" aria-hidden="true"></i> María L. (LUZ)
+                </span>
+                <span class="member-chip">
+                  <i class="fas fa-user" aria-hidden="true"></i> José R. (LUZ)
+                </span>
+              </div>
+              <div class="team-progress">
+                <div class="progress-label">
+                  <span>Avance del caso</span><span>65%</span>
+                </div>
+                <div class="progress-bar-track" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Avance del caso: 65%">
+                  <div class="progress-bar-fill" style="width:65%"></div>
+                </div>
+              </div>
+              <div class="team-actions">
+                <button class="btn btn-primary btn-sm" onclick="showToast('Abriendo sala de colaboración...', 'info')">
+                  <i class="fas fa-comments" aria-hidden="true"></i> Colaborar
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="showToast('Cargando materiales del equipo...', 'info')">
+                  <i class="fas fa-folder" aria-hidden="true"></i> Materiales
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="showToast('Iniciando videollamada...', 'success')">
+                  <i class="fas fa-video" aria-hidden="true"></i> Videollamada
+                </button>
+              </div>
+            </div>
+
+            <!-- Equipo 2 -->
+            <div class="team-card">
+              <div class="team-header">
+                <div class="team-avatar" aria-hidden="true" style="background:linear-gradient(135deg,#dc3545,#a71d2a)">
+                  <i class="fas fa-kidneys"></i>
+                </div>
+                <div class="team-info">
+                  <h4>Equipo Nefrológico Beta</h4>
+                  <p>Caso: Falla Renal Aguda — Manejo en UCI</p>
+                </div>
+                <span class="team-status status-pending">Pendiente</span>
+              </div>
+              <div class="team-members" aria-label="Miembros del equipo">
+                <span class="member-chip">
+                  <i class="fas fa-user" aria-hidden="true"></i> Ana G. (PUCE-SD)
+                </span>
+                <span class="member-chip">
+                  <i class="fas fa-user" aria-hidden="true"></i> Sofía M. (LUZ)
+                </span>
+                <span class="member-chip">
+                  <i class="fas fa-user" aria-hidden="true"></i> David R. (PUCE-SD)
+                </span>
+              </div>
+              <div class="team-progress">
+                <div class="progress-label">
+                  <span>Avance del caso</span><span>15%</span>
+                </div>
+                <div class="progress-bar-track" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Avance del caso: 15%">
+                  <div class="progress-bar-fill orange" style="width:15%"></div>
+                </div>
+              </div>
+              <div class="team-actions">
+                <button class="btn btn-primary btn-sm" onclick="showToast('Abriendo caso clínico...', 'info')">
+                  <i class="fas fa-play" aria-hidden="true"></i> Iniciar Caso
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="showToast('Cargando materiales...', 'info')">
+                  <i class="fas fa-folder" aria-hidden="true"></i> Materiales
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat COIL -->
+          <div>
+            <div class="coil-chat">
+              <div class="coil-chat-header">
+                <i class="fas fa-comments" aria-hidden="true"></i>
+                <h3>Chat — Cardiovascular Alpha</h3>
+              </div>
+              <div class="coil-messages" id="coilMessages" role="log" aria-live="polite" aria-label="Chat del equipo COIL">
+                <div class="coil-msg">
+                  <div class="coil-msg-avatar" style="background:#007bff;" aria-hidden="true">ML</div>
+                  <div class="coil-msg-content">
+                    <p>Hola equipo, ¿revisaron el artículo sobre Miocardiopatía Hipertrófica que compartí?</p>
+                    <div class="coil-msg-meta">María L. (LUZ) · hace 1h</div>
+                  </div>
+                </div>
+                <div class="coil-msg">
+                  <div class="coil-msg-avatar" style="background:#28a745;" aria-hidden="true">CP</div>
+                  <div class="coil-msg-content">
+                    <p>Sí, muy útil. Podríamos incluir el caso del paciente con síncope de esfuerzo para el diagnóstico diferencial.</p>
+                    <div class="coil-msg-meta">Carlos P. (PUCE-SD) · hace 45 min</div>
+                  </div>
+                </div>
+                <div class="coil-msg">
+                  <div class="coil-msg-avatar" style="background:#fd7e14;" aria-hidden="true">JR</div>
+                  <div class="coil-msg-content">
+                    <p>De acuerdo. Yo preparo la sección de tratamiento con betabloqueantes. Nos vemos el jueves 🩺</p>
+                    <div class="coil-msg-meta">José R. (LUZ) · hace 20 min</div>
+                  </div>
+                </div>
+              </div>
+              <form
+                class="chat-input-area"
+                onsubmit="sendCoilMessage(event)"
+                aria-label="Enviar mensaje al equipo COIL"
+              >
+                <input
+                  type="text"
+                  id="coilChatInput"
+                  placeholder="Escribe un mensaje al equipo..."
+                  aria-label="Mensaje para el equipo COIL"
+                  autocomplete="off"
+                />
+                <button type="submit" aria-label="Enviar mensaje" style="background:var(--accent-color)">
+                  <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div><!-- /coil-grid -->
+      </section><!-- /page-coil -->
+
+      <!-- ==================== EVALUACIONES ==================== -->
+      <section
+        class="page"
+        id="page-assessments"
+        aria-label="Evaluaciones y pruebas"
+      >
+        <div class="page-header">
+          <h2 class="page-title"><span>Evaluaciones</span> y Pruebas</h2>
+          <p class="page-subtitle">
+            Quizzes adaptativos, OSCEs, casos ABP y diagnóstico por imágenes
+          </p>
+        </div>
+
+        <div class="assessments-grid">
+
+          <!-- Evaluación 1 -->
+          <article class="assessment-card quiz" aria-label="Quiz de Anatomía Cardíaca">
+            <div class="assessment-header">
+              <div>
+                <h4>Quiz: Anatomía Cardíaca</h4>
+                <p class="text-muted">Módulo: Sistema Cardiovascular</p>
+              </div>
+              <span class="assessment-type-badge badge-quiz">Quiz</span>
+            </div>
+            <div class="assessment-details">
+              <span class="assessment-detail-item">
+                <i class="fas fa-calendar" aria-hidden="true"></i> 01 May 2026
+              </span>
+              <span class="assessment-detail-item">
+                <i class="fas fa-clock" aria-hidden="true"></i> 45 min
+              </span>
+              <span class="assessment-detail-item">
+                <i class="fas fa-question-circle" aria-hidden="true"></i> 30 preguntas
+              </span>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Iniciando Quiz de Anatomía Cardíaca...', 'info')">
+              <i class="fas fa-play" aria-hidden="true"></i> Iniciar Quiz
+            </button>
+          </article>
+
+          <!-- Evaluación 2 -->
+          <article class="assessment-card osce" aria-label="OSCE de Exploración Cardiorrespiratoria">
+            <div class="assessment-header">
+              <div>
+                <h4>OSCE: Exploración Cardiorrespiratoria</h4>
+                <p class="text-muted">Módulo: Semiología Médica</p>
+              </div>
+              <span class="assessment-type-badge badge-osce">OSCE</span>
+            </div>
+            <div class="assessment-details">
+              <span class="assessment-detail-item">
+                <i class="fas fa-calendar" aria-hidden="true"></i> 05 May 2026
+              </span>
+              <span class="assessment-detail-item">
+                <i class="fas fa-clock" aria-hidden="true"></i> 30 min
+              </span>
+              <span class="assessment-detail-item">
+                <i class="fas fa-star" aria-hidden="true"></i> 100 puntos
+              </span>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Preparando simulación OSCE...', 'info')">
+              <i class="fas fa-stethoscope" aria-hidden="true"></i> Iniciar Simulación
+            </button>
+          </article>
+
+          <!-- Evaluación 3 - Completada -->
+          <article class="assessment-card abp" aria-label="Caso ABP de Insuficiencia Cardíaca (Completado)">
+            <div class="assessment-header">
+              <div>
+                <h4>ABP: Insuficiencia Cardíaca Congestiva</h4>
+                <p class="text-muted">Módulo: Sistema Cardiovascular</p>
+              </div>
+              <span class="assessment-type-badge badge-abp">ABP</span>
+            </div>
+            <div class="assessment-result" aria-label="Resultado obtenido">
+              <div>
+                <div class="result-score">88/100</div>
+                <div class="result-label">Puntuación obtenida</div>
+              </div>
+              <div style="flex:1">
+                <div class="progress-label">
+                  <span>Desempeño</span><span>88%</span>
+                </div>
+                <div class="progress-bar-track" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100" aria-label="Desempeño: 88%">
+                  <div class="progress-bar-fill" style="width:88%"></div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Cargando retroalimentación del caso...', 'info')">
+              <i class="fas fa-eye" aria-hidden="true"></i> Ver Retroalimentación
+            </button>
+          </article>
+
+          <!-- Evaluación 4 -->
+          <article class="assessment-card imaging" aria-label="Diagnóstico por imágenes radiológicas">
+            <div class="assessment-header">
+              <div>
+                <h4>Diagnóstico por Imágenes: Radiología Torácica</h4>
+                <p class="text-muted">Módulo: Semiología / Cardiología</p>
+              </div>
+              <span class="assessment-type-badge badge-imaging">Imágenes</span>
+            </div>
+            <div class="assessment-details">
+              <span class="assessment-detail-item">
+                <i class="fas fa-calendar" aria-hidden="true"></i> 10 May 2026
+              </span>
+              <span class="assessment-detail-item">
+                <i class="fas fa-image" aria-hidden="true"></i> 15 radiografías
+              </span>
+              <span class="assessment-detail-item">
+                <i class="fas fa-clock" aria-hidden="true"></i> 60 min
+              </span>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Cargando visor de imágenes médicas...', 'info')">
+              <i class="fas fa-x-ray" aria-hidden="true"></i> Iniciar Diagnóstico
+            </button>
+          </article>
+
+        </div><!-- /assessments-grid -->
+      </section><!-- /page-assessments -->
+
+      <!-- ==================== GAMIFICACIÓN ==================== -->
+      <section
+        class="page"
+        id="page-gamification"
+        aria-label="Sistema de gamificación"
+      >
+        <div class="page-header">
+          <h2 class="page-title">Centro de <span>Gamificación</span></h2>
+          <p class="page-subtitle">
+            Sube de nivel, gana insignias y compite con colegas de todo el mundo
+          </p>
+        </div>
+
+        <!-- Hero de progreso -->
+        <div class="gamification-hero" aria-label="Tu progreso gamificado">
+          <div class="hero-level">
+            <i class="fas fa-star" aria-hidden="true"></i> Nivel 8
+          </div>
+          <div class="hero-rank">🥉 Médico Residente II</div>
+          <div class="hero-xp">9,500 XP / 10,000 XP para el Nivel 9</div>
+          <div class="hero-progress-track"
+               role="progressbar"
+               aria-valuenow="95"
+               aria-valuemin="0"
+               aria-valuemax="100"
+               aria-label="Progreso al siguiente nivel: 95%">
+            <div class="hero-progress-fill" style="width: 95%"></div>
+          </div>
+          <div class="hero-xp-labels">
+            <span>Nivel 8</span>
+            <span>Nivel 9 — Médico Residente III</span>
+          </div>
+        </div>
+
+        <div class="gamification-sections">
+
+          <!-- Ranking global -->
+          <div class="card" aria-labelledby="leaderboard-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="leaderboard-heading">
+                <i class="fas fa-crown" aria-hidden="true"></i> Ranking Global
+              </h3>
+              <span class="text-muted" style="font-size:0.78rem;">Top 10 estudiantes</span>
+            </div>
+            <ol class="leaderboard-list" aria-label="Tabla de clasificación">
+              <li>
+                <span class="lb-rank gold" aria-label="Posición 1">1</span>
+                <div style="flex:1">
+                  <div class="lb-name">María L.</div>
+                  <div class="lb-university">LUZ, Venezuela</div>
+                </div>
+                <span class="lb-score">12,500 XP</span>
+              </li>
+              <li>
+                <span class="lb-rank silver" aria-label="Posición 2">2</span>
+                <div style="flex:1">
+                  <div class="lb-name">Carlos P.</div>
+                  <div class="lb-university">PUCE-SD, Ecuador</div>
+                </div>
+                <span class="lb-score">12,100 XP</span>
+              </li>
+              <li>
+                <span class="lb-rank bronze" aria-label="Posición 3">3</span>
+                <div style="flex:1">
+                  <div class="lb-name">Sofía M.</div>
+                  <div class="lb-university">LUZ, Venezuela</div>
+                </div>
+                <span class="lb-score">11,800 XP</span>
+              </li>
+              <li>
+                <span class="lb-rank" aria-label="Posición 4">4</span>
+                <div style="flex:1">
+                  <div class="lb-name">David R.</div>
+                  <div class="lb-university">PUCE-SD, Ecuador</div>
+                </div>
+                <span class="lb-score">11,500 XP</span>
+              </li>
+              <li>
+                <span class="lb-rank" aria-label="Posición 5">5</span>
+                <div style="flex:1">
+                  <div class="lb-name">Valentina C.</div>
+                  <div class="lb-university">LUZ, Venezuela</div>
+                </div>
+                <span class="lb-score">10,900 XP</span>
+              </li>
+              <li
+                style="background:rgba(0,123,255,0.06); border-radius:var(--radius-sm); padding:8px 4px;"
+                aria-label="Tu posición"
+              >
+                <span class="lb-rank" style="background:var(--primary-color);color:#fff;" aria-label="Posición 15">15</span>
+                <div style="flex:1">
+                  <div class="lb-name">Ana G. <span style="font-size:0.72rem;color:var(--primary-color);">(Tú)</span></div>
+                  <div class="lb-university">PUCE-SD, Ecuador</div>
+                </div>
+                <span class="lb-score">9,500 XP</span>
+              </li>
+            </ol>
+          </div>
+
+          <!-- Panel lateral (insignias + escape rooms) -->
+          <div>
+            <!-- Insignias -->
+            <div class="card mb-2" aria-labelledby="badges-heading">
+              <div class="card-header">
+                <h3 class="card-title" id="badges-heading">
+                  <i class="fas fa-medal" aria-hidden="true"></i> Insignias
+                </h3>
+              </div>
+              <div class="badges-grid">
+                <div class="badge-card" title="Anatomista Cardíaco">
+                  <div class="badge-icon" style="background:rgba(0,123,255,0.15)" aria-hidden="true">
+                    <i class="fas fa-heart" style="color:var(--primary-color)"></i>
+                  </div>
+                  <span class="badge-name">Anatomista Cardíaco</span>
+                </div>
+                <div class="badge-card" title="Maestro Pulmonar">
+                  <div class="badge-icon" style="background:rgba(40,167,69,0.15)" aria-hidden="true">
+                    <i class="fas fa-lungs" style="color:var(--accent-color)"></i>
+                  </div>
+                  <span class="badge-name">Maestro Pulmonar</span>
+                </div>
+                <div class="badge-card" title="Colaborador COIL">
+                  <div class="badge-icon" style="background:rgba(253,126,20,0.15)" aria-hidden="true">
+                    <i class="fas fa-globe" style="color:var(--warning-color)"></i>
+                  </div>
+                  <span class="badge-name">Colaborador COIL</span>
+                </div>
+                <div class="badge-card locked" title="Bloqueado - Completa más módulos" aria-label="Insignia bloqueada: Experto en Imágenes">
+                  <div class="badge-icon" style="background:#e9ecef" aria-hidden="true">
+                    <i class="fas fa-x-ray" style="color:#aaa"></i>
+                  </div>
+                  <span class="badge-name">Experto Imágenes</span>
+                </div>
+                <div class="badge-card locked" title="Bloqueado" aria-label="Insignia bloqueada: Maestro ABP">
+                  <div class="badge-icon" style="background:#e9ecef" aria-hidden="true">
+                    <i class="fas fa-brain" style="color:#aaa"></i>
+                  </div>
+                  <span class="badge-name">Maestro ABP</span>
+                </div>
+                <div class="badge-card locked" title="Bloqueado" aria-label="Insignia bloqueada: Farmacólogo">
+                  <div class="badge-icon" style="background:#e9ecef" aria-hidden="true">
+                    <i class="fas fa-pills" style="color:#aaa"></i>
+                  </div>
+                  <span class="badge-name">Farmacólogo</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Escape Rooms -->
+            <div class="card" aria-labelledby="escaperooms-heading">
+              <div class="card-header">
+                <h3 class="card-title" id="escaperooms-heading">
+                  <i class="fas fa-door-open" aria-hidden="true"></i> Escape Rooms Clínicos
+                </h3>
+              </div>
+              <div class="escape-rooms-grid">
+                <article class="escape-room-card" aria-label="Escape Room: Crisis en la UCI">
+                  <div class="er-icon hard" aria-hidden="true">
+                    <i class="fas fa-skull-crossbones"></i>
+                  </div>
+                  <div class="er-info">
+                    <h4>Crisis en la UCI: Sepsis</h4>
+                    <div class="er-meta">
+                      <span><i class="fas fa-fire" aria-hidden="true"></i> Difícil</span>
+                      <span><i class="fas fa-clock" aria-hidden="true"></i> 60 min</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-sm" onclick="showToast('Iniciando Escape Room: Crisis en la UCI...', 'success')">
+                    Iniciar
+                  </button>
+                </article>
+                <article class="escape-room-card" aria-label="Escape Room: Misterio Renal (completado)">
+                  <div class="er-icon easy" aria-hidden="true">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div class="er-info">
+                    <h4>Misterio Renal: Falla Aguda</h4>
+                    <div class="er-meta">
+                      <span><i class="fas fa-fire" aria-hidden="true"></i> Medio</span>
+                      <span class="text-success"><i class="fas fa-trophy" aria-hidden="true"></i> Completado</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-secondary btn-sm" onclick="showToast('Revisando resultados del Escape Room...', 'info')">
+                    Revisar
+                  </button>
+                </article>
+              </div>
+            </div>
+
+          </div><!-- /panel lateral -->
+
+        </div><!-- /gamification-sections -->
+
+      </section><!-- /page-gamification -->
+
+      <!-- ==================== ANALÍTICAS ==================== -->
+      <section
+        class="page"
+        id="page-analytics"
+        aria-label="Analíticas de aprendizaje"
+      >
+        <div class="page-header">
+          <h2 class="page-title">Analíticas de <span>Aprendizaje</span></h2>
+          <p class="page-subtitle">
+            Visualiza tu progreso, fortalezas y áreas de mejora
+          </p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue" aria-hidden="true"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+              <p>Horas de Estudio</p>
+              <div class="stat-value">142h</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green" aria-hidden="true"><i class="fas fa-percentage"></i></div>
+            <div class="stat-info">
+              <p>Promedio Evaluaciones</p>
+              <div class="stat-value">84%</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange" aria-hidden="true"><i class="fas fa-fire"></i></div>
+            <div class="stat-info">
+              <p>Racha Actual</p>
+              <div class="stat-value">12 días</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red" aria-hidden="true"><i class="fas fa-tasks"></i></div>
+            <div class="stat-info">
+              <p>Actividades Completadas</p>
+              <div class="stat-value">87</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid mt-2">
+          <div class="card" aria-labelledby="analytics-progress-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="analytics-progress-heading">
+                <i class="fas fa-chart-line" aria-hidden="true"></i>
+                Progreso por Módulo
+              </h3>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.9rem;">
+              <div>
+                <div class="progress-label"><span>Sistema Cardiovascular</span><span>75%</span></div>
+                <div class="progress-bar-track" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso Sistema Cardiovascular: 75%">
+                  <div class="progress-bar-fill" style="width:75%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="progress-label"><span>Fisiología Respiratoria</span><span>48%</span></div>
+                <div class="progress-bar-track" role="progressbar" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso Fisiología Respiratoria: 48%">
+                  <div class="progress-bar-fill" style="width:48%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="progress-label"><span>Semiología Médica</span><span>35%</span></div>
+                <div class="progress-bar-track" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso Semiología: 35%">
+                  <div class="progress-bar-fill orange" style="width:35%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="progress-label"><span>Patología Renal</span><span>20%</span></div>
+                <div class="progress-bar-track" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso Patología Renal: 20%">
+                  <div class="progress-bar-fill orange" style="width:20%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="progress-label"><span>Neuroanatomía Clínica</span><span>100%</span></div>
+                <div class="progress-bar-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso Neuroanatomía: 100% completado">
+                  <div class="progress-bar-fill" style="width:100%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" aria-labelledby="analytics-eval-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="analytics-eval-heading">
+                <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                Historial de Evaluaciones
+              </h3>
+            </div>
+            <ul style="display:flex;flex-direction:column;gap:0.7rem;">
+              <li style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-color);font-size:0.87rem;">
+                <span>ABP — Insuficiencia Cardíaca</span>
+                <span style="font-weight:700;color:var(--accent-color);">88/100</span>
+              </li>
+              <li style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-color);font-size:0.87rem;">
+                <span>Quiz — Neuroanatomía</span>
+                <span style="font-weight:700;color:var(--accent-color);">92/100</span>
+              </li>
+              <li style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-color);font-size:0.87rem;">
+                <span>OSCE — Examen Físico</span>
+                <span style="font-weight:700;color:var(--warning-color);">74/100</span>
+              </li>
+              <li style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:0.87rem;">
+                <span>Quiz — Fisiología Resp.</span>
+                <span style="font-weight:700;color:var(--accent-color);">81/100</span>
+              </li>
+            </ul>
+            <div style="text-align:center;margin-top:1rem;padding-top:0.8rem;border-top:1px solid var(--border-color);">
+              <strong style="font-size:1.2rem;color:var(--primary-color);">Promedio: 83.75 / 100</strong>
+            </div>
+          </div>
+        </div>
+
+      </section><!-- /page-analytics -->
+
+      <!-- ==================== PERFIL ==================== -->
+      <section
+        class="page"
+        id="page-profile"
+        aria-label="Mi perfil de usuario"
+      >
+        <div class="page-header">
+          <h2 class="page-title">Mi <span>Perfil</span></h2>
+          <p class="page-subtitle">Gestiona tu información personal y preferencias académicas</p>
+        </div>
+
+        <!-- Hero del perfil -->
+        <div class="profile-hero" aria-label="Información de perfil">
+          <div class="profile-avatar-large" aria-hidden="true">AG</div>
+          <div class="profile-hero-info">
+            <h3>Dr. Ana García Rodríguez</h3>
+            <p>
+              <i class="fas fa-university" aria-hidden="true"></i>
+              PUCE-SD — Pontificia Universidad Católica del Ecuador, Sede Santo Domingo
+            </p>
+            <p>
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              ana.garcia@puce.edu.ec
+            </p>
+            <div class="profile-tags">
+              <span class="profile-tag">Estudiante — 4º Año</span>
+              <span class="profile-tag">Medicina</span>
+              <span class="profile-tag">Nivel 8</span>
+              <span class="profile-tag">COIL Activo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+
+          <!-- Formulario de información -->
+          <div class="card" aria-labelledby="profile-form-heading">
+            <div class="card-header">
+              <h3 class="card-title" id="profile-form-heading">
+                <i class="fas fa-user-edit" aria-hidden="true"></i>
+                Información Personal
+              </h3>
+            </div>
+            <form onsubmit="handleProfileSave(event)" aria-label="Formulario de perfil personal">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="profileFirstName">Nombre(s)</label>
+                  <input
+                    type="text"
+                    id="profileFirstName"
+                    value="Ana"
+                    aria-required="true"
+                    autocomplete="given-name"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="profileLastName">Apellido(s)</label>
+                  <input
+                    type="text"
+                    id="profileLastName"
+                    value="García Rodríguez"
+                    aria-required="true"
+                    autocomplete="family-name"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="profileEmail">Correo Electrónico</label>
+                <input
+                  type="email"
+                  id="profileEmail"
+                  value="ana.garcia@puce.edu.ec"
+                  aria-required="true"
+                  autocomplete="email"
+                />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="profileUniversity">Universidad</label>
+                  <select id="profileUniversity" aria-required="true">
+                    <option selected>PUCE-SD (Ecuador)</option>
+                    <option>LUZ (Venezuela)</option>
+                    <option>Otra</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="profileYear">Año de carrera</label>
+                  <select id="profileYear">
+                    <option>1er año</option>
+                    <option>2do año</option>
+                    <option>3er año</option>
+                    <option selected>4to año</option>
+                    <option>5to año</option>
+                    <option>6to año (Internado)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="profileBio">Sobre mí / Intereses académicos</label>
+                <textarea
+                  id="profileBio"
+                  rows="3"
+                  placeholder="Describe tus intereses médicos, especialización deseada..."
+                >Interesada en Cardiología Clínica y Medicina Interna. Apasionada por la integración de tecnología en la educación médica.</textarea>
+              </div>
+              <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save" aria-hidden="true"></i> Guardar Cambios
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="showToast('Cambios descartados', 'warning')">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Panel lateral del perfil -->
+          <div>
+            <!-- Estadísticas académicas -->
+            <div class="card mb-2" aria-labelledby="profile-stats-heading">
+              <div class="card-header">
+                <h3 class="card-title" id="profile-stats-heading">
+                  <i class="fas fa-chart-pie" aria-hidden="true"></i>
+                  Estadísticas Académicas
+                </h3>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.8rem;">
+                <div style="display:flex;justify-content:space-between;font-size:0.88rem;padding:6px 0;border-bottom:1px solid var(--border-color);">
+                  <span>Módulos completados</span>
+                  <strong>9 / 13</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.88rem;padding:6px 0;border-bottom:1px solid var(--border-color);">
+                  <span>Promedio de evaluaciones</span>
+                  <strong style="color:var(--accent-color)">84%</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.88rem;padding:6px 0;border-bottom:1px solid var(--border-color);">
+                  <span>Actividades COIL</span>
+                  <strong>7 completadas</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.88rem;padding:6px 0;border-bottom:1px solid var(--border-color);">
+                  <span>Puntos XP</span>
+                  <strong style="color:var(--primary-color)">9,500 XP</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.88rem;padding:6px 0;">
+                  <span>Racha de estudio</span>
+                  <strong style="color:var(--warning-color)">🔥 12 días</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Configuración rápida -->
+            <div class="card" aria-labelledby="profile-settings-heading">
+              <div class="card-header">
+                <h3 class="card-title" id="profile-settings-heading">
+                  <i class="fas fa-cog" aria-hidden="true"></i>
+                  Preferencias
+                </h3>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1rem;">
+                <label style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:0.88rem;">
+                  <span>Notificaciones por correo</span>
+                  <input
+                    type="checkbox"
+                    checked
+                    style="width:16px;height:16px;cursor:pointer;"
+                    aria-label="Activar notificaciones por correo"
+                    onchange="showToast('Preferencia de notificaciones actualizada', 'success')"
+                  />
+                </label>
+                <label style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:0.88rem;">
+                  <span>Recordatorios de estudio</span>
+                  <input
+                    type="checkbox"
+                    checked
+                    style="width:16px;height:16px;cursor:pointer;"
+                    aria-label="Activar recordatorios de estudio"
+                    onchange="showToast('Preferencia de recordatorios actualizada', 'success')"
+                  />
+                </label>
+                <label style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:0.88rem;">
+                  <span>Aparecer en el ranking</span>
+                  <input
+                    type="checkbox"
+                    checked
+                    style="width:16px;height:16px;cursor:pointer;"
+                    aria-label="Aparecer en el ranking global"
+                    onchange="showToast('Preferencia de ranking actualizada', 'success')"
+                  />
+                </label>
+              </div>
+            </div>
+          </div><!-- /panel lateral perfil -->
+
+        </div><!-- /profile-grid -->
+      </section><!-- /page-profile -->
+
+    </main><!-- /content-area -->
+  </div><!-- /app-container -->
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+    /* ========================================================
+       DATOS Y ESTADO GLOBAL
+    ======================================================== */
+    const APP_STATE = {
+      currentPage: "dashboard",
+      isSidebarOpen: false,
+      aiChatLog: [],
+      coilMessages: [],
+    };
+
+    /* Respuestas de IA simuladas */
+    const AI_RESPONSES = {
+      corazon: "El corazón es un órgano muscular de aproximadamente 300 g ubicado en el mediastino medio. Tiene cuatro cámaras: dos aurículas y dos ventrículos. Su sistema de conducción incluye el nodo SA (marcapasos natural, 60–100 lpm), el nodo AV, el haz de His y las fibras de Purkinje. ¿Te gustaría profundizar en su anatomía, fisiología o electrocardiografía?",
+      diafragma: "El diafragma es el principal músculo inspiratorio. Su inervación motora proviene del <strong>nervio frénico (C3–C4–C5)</strong>. La inervación sensitiva periférica llega de los nervios intercostales (T5–T11). Regla mnemotécnica: <em>\"C3, 4 y 5 mantienen el diafragma vivo\"</em>.",
+      huesos: "El esqueleto humano adulto consta de <strong>206 huesos</strong>. Se divide en: esqueleto axial (80 huesos: cráneo, columna, costillas y esternón) y esqueleto apendicular (126 huesos: extremidades superiores e inferiores y cinturas). Los huesos también funcionan como reserva de calcio y fósforo y producen células sanguíneas en su médula.",
+      riñon: "Los riñones son órganos retroperitoneales con forma de frijol, de ~11 cm de longitud. Su unidad funcional es la <strong>nefrona</strong> (~1 millón por riñón). Sus funciones incluyen: filtración glomerular (TFG ≈ 125 mL/min), regulación del equilibrio hidroelectrolítico, control de la presión arterial (SRAA), eritropoyesis (eritropoyetina) y metabolismo de la vitamina D.",
+      farmaco: "La farmacología cardiovascular incluye varias clases principales: <br><br>• <strong>IECA/ARA-II</strong>: Bloquean el SRAA → reducen PA y carga cardíaca<br>• <strong>Betabloqueantes</strong>: Reducen FC y contractilidad → útiles en IC y arritmias<br>• <strong>Calcioantagonistas</strong>: Vasodilatación y control de FC<br>• <strong>Diuréticos</strong>: Reducen precarga → útiles en IC con congestión<br>• <strong>Anticoagulantes</strong>: Heparinas, warfarina, DOACs → prevención tromboembólica",
+      sepsis: "La sepsis se define como <strong>disfunción orgánica potencialmente mortal</strong> causada por una respuesta desregulada del huésped a la infección (Sepsis-3). El shock séptico añade hipotensión refractaria y elevación de lactato >2 mmol/L. Manejo (<em>\"Hora 1 del bundle\"</em>): medir lactato, hemocultivos x2, antibióticos empíricos IV, 30 mL/kg de cristaloide IV, vasopresores si hipotensión persiste.",
+      default: "Esa es una excelente pregunta médica. Para brindarte una respuesta más precisa, ¿podrías especificar si te interesa el enfoque anatómico, fisiológico, fisiopatológico, farmacológico o clínico del tema? Mientras tanto, te recomiendo revisar los módulos relacionados en la plataforma. 🩺"
+    };
+
+    /* ========================================================
+       NAVEGACIÓN ENTRE PÁGINAS
+    ======================================================== */
+    function showPage(pageId, event) {
+      if (event) event.preventDefault();
+
+      // Ocultar todas las páginas
+      document.querySelectorAll(".page").forEach(p => {
+        p.classList.remove("active");
+      });
+
+      // Mostrar la página seleccionada
+      const targetPage = document.getElementById("page-" + pageId);
+      if (targetPage) {
+        targetPage.classList.add("active");
+        targetPage.focus();
+      }
+
+      // Actualizar links activos del sidebar
+      document.querySelectorAll(".nav-link").forEach(link => {
+        link.classList.remove("active");
+        link.removeAttribute("aria-current");
+      });
+
+      const activeLink = document.getElementById("nav-" + pageId);
+      if (activeLink) {
+        activeLink.classList.add("active");
+        activeLink.setAttribute("aria-current", "page");
+      }
+
+      // Cerrar sidebar en móvil
+      closeSidebar();
+
+      // Actualizar estado
+      APP_STATE.currentPage = pageId;
+
+      // Scroll al inicio
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ========================================================
+       SIDEBAR TOGGLE
+    ======================================================== */
+    const sidebarToggle  = document.getElementById("sidebarToggle");
+    const appSidebar     = document.getElementById("appSidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    function openSidebar() {
+      appSidebar.classList.add("open");
+      sidebarOverlay.classList.add("active");
+      sidebarToggle.setAttribute("aria-expanded", "true");
+      APP_STATE.isSidebarOpen = true;
+      // Trampa de foco opcional aquí para accesibilidad completa
+    }
+
+    function closeSidebar() {
+      appSidebar.classList.remove("open");
+      sidebarOverlay.classList.remove("active");
+      sidebarToggle.setAttribute("aria-expanded", "false");
+      APP_STATE.isSidebarOpen = false;
+    }
+
+    sidebarToggle.addEventListener("click", () => {
+      APP_STATE.isSidebarOpen ? closeSidebar() : openSidebar();
+    });
+
+    sidebarOverlay.addEventListener("click", closeSidebar);
+
+    // Cerrar sidebar con ESC
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && APP_STATE.isSidebarOpen) {
+        closeSidebar();
+        sidebarToggle.focus();
+      }
+    });
+
+    /* ========================================================
+       TUTOR DE IA — CHAT
+    ======================================================== */
+    function sendAIMessage(event) {
+      event.preventDefault();
+      const input = document.getElementById("chatInput");
+      const chatLog = document.getElementById("chatLog");
+      const question = input.value.trim();
+      if (!question) return;
+
+      // Agregar mensaje del usuario
+      appendChatMessage(chatLog, "user", question);
+      input.value = "";
+      input.disabled = true;
+
+      // Mostrar indicador de carga
+      const loadingMsg = appendChatMessage(
+        chatLog,
+        "ai",
+        '<div class="loading-dots"><span></span><span></span><span></span></div>',
+        true
+      );
+
+      // Simular respuesta de IA
+      setTimeout(() => {
+        const response = getAIResponse(question);
+        loadingMsg.innerHTML = response;
+        input.disabled = false;
+        input.focus();
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }, 1200 + Math.random() * 600);
+    }
+
+    function appendChatMessage(container, type, content, isHTML = false) {
+      const msg = document.createElement("div");
+      msg.className = "chat-message " + type;
+      if (isHTML) {
+        msg.innerHTML = content;
+      } else {
+        msg.textContent = content;
+      }
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
+      return msg;
+    }
+
+    function getAIResponse(question) {
+      const q = question.toLowerCase();
+      if (q.includes("corazón") || q.includes("corazon") || q.includes("cardíaco") || q.includes("cardiaco")) {
+        return AI_RESPONSES.corazon;
+      } else if (q.includes("diafragma") || q.includes("frénico") || q.includes("frenico")) {
+        return AI_RESPONSES.diafragma;
+      } else if (q.includes("hueso") || q.includes("esqueleto") || q.includes("óseo")) {
+        return AI_RESPONSES.huesos;
+      } else if (q.includes("riñon") || q.includes("renal") || q.includes("nefrona")) {
+        return AI_RESPONSES.riñon;
+      } else if (q.includes("farmaco") || q.includes("medicamento") || q.includes("fármaco") || q.includes("droga")) {
+        return AI_RESPONSES.farmaco;
+      } else if (q.includes("sepsis") || q.includes("séptico") || q.includes("shock")) {
+        return AI_RESPONSES.sepsis;
+      } else {
+        return AI_RESPONSES.default;
+      }
+    }
+
+    /* ========================================================
+       CHAT COIL
+    ======================================================== */
+    function sendCoilMessage(event) {
+      event.preventDefault();
+      const input = document.getElementById("coilChatInput");
+      const messagesContainer = document.getElementById("coilMessages");
+      const text = input.value.trim();
+      if (!text) return;
+
+      // Mensaje del usuario actual
+      const msgEl = document.createElement("div");
+      msgEl.className = "coil-msg";
+      msgEl.innerHTML = `
+        <div class="coil-msg-avatar" style="background:#6c757d;" aria-hidden="true">AG</div>
+        <div class="coil-msg-content">
+          <p>${escapeHTML(text)}</p>
+          <div class="coil-msg-meta">Ana G. (PUCE-SD) · ahora</div>
+        </div>
+      `;
+      messagesContainer.appendChild(msgEl);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      input.value = "";
+      input.focus();
+
+      showToast("Mensaje enviado al equipo COIL", "success");
+    }
+
+    /* ========================================================
+       FILTROS DE MÓDULOS
+    ======================================================== */
+    function filterModules(btn, category) {
+      // Actualizar botones activos
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      // Filtrar tarjetas
+      document.querySelectorAll("#modulesGrid .module-card").forEach(card => {
+        if (category === "all") {
+          card.style.display = "";
+        } else {
+          const cats = card.dataset.category || "";
+          card.style.display = cats.includes(category) ? "" : "none";
+        }
+      });
+    }
+
+    /* ========================================================
+       BÚSQUEDA GLOBAL
+    ======================================================== */
+    function handleSearch(event) {
+      event.preventDefault();
+      const query = document.getElementById("globalSearch").value.trim();
+      if (!query) return;
+      showToast(`Buscando: "${query}"...`, "info");
+    }
+
+    /* ========================================================
+       GUARDAR PERFIL
+    ======================================================== */
+    function handleProfileSave(event) {
+      event.preventDefault();
+      showToast("Perfil actualizado correctamente ✓", "success");
+    }
+
+    /* ========================================================
+       SISTEMA DE TOASTS
+    ======================================================== */
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toastContainer");
+      const icons = {
+        success: "fa-check-circle",
+        info:    "fa-info-circle",
+        warning: "fa-exclamation-triangle",
+        error:   "fa-times-circle"
+      };
+
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.setAttribute("role", "status");
+      toast.innerHTML = `
+        <i class="fas ${icons[type] || icons.info}" aria-hidden="true"></i>
+        <span>${escapeHTML(message)}</span>
+      `;
+      container.appendChild(toast);
+
+      // Eliminar automáticamente después de 3 segundos
+      setTimeout(() => {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 3100);
+    }
+
+    /* ========================================================
+       UTILIDADES
+    ======================================================== */
+    function escapeHTML(str) {
+      const div = document.createElement("div");
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    /* ========================================================
+       FECHA ACTUAL
+    ======================================================== */
+    function setCurrentDate() {
+      const dateEl = document.getElementById("currentDate");
+      if (!dateEl) return;
+      const now = new Date();
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      };
+      dateEl.textContent = now.toLocaleDateString("es-ES", options);
+    }
+
+    /* ========================================================
+       RESPONSIVE — detectar cambio de tamaño
+    ======================================================== */
+    function handleResize() {
+      if (window.innerWidth >= 768) {
+        closeSidebar();
+      }
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    /* ========================================================
+       INICIALIZACIÓN
+    ======================================================== */
+    document.addEventListener("DOMContentLoaded", () => {
+      setCurrentDate();
+
+      // Animar barras de progreso al cargar
+      setTimeout(() => {
+        document.querySelectorAll(".progress-bar-fill").forEach(bar => {
+          const targetWidth = bar.style.width;
+          bar.style.width = "0%";
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              bar.style.width = targetWidth;
+            }, 50);
+          });
+        });
+      }, 200);
+
+      // Toast de bienvenida
+      setTimeout(() => {
+        showToast("Bienvenida de nuevo, Dr. Ana García 👋", "success");
+      }, 800);
+    });
+  </script>
+
+</body>
+</html>
